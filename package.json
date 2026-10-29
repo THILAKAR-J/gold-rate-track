@@ -1,0 +1,17 @@
+{
+  "name": "gold-rate-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Kanak: gold rate today in India. Static site generated from data/rates.json.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "node build.mjs",
+    "build:flat": "node build.mjs --flat",
+    "serve": "node scripts/serve.mjs",
+    "dev": "node build.mjs && node scripts/serve.mjs",
+    "update-rates": "node scripts/update-rates.mjs",
+    "check": "node build.mjs && node scripts/check.mjs"
+  },
+  "license": "UNLICENSED"
+}

@@ -1,0 +1,58 @@
+{
+  "sample": true,
+  "date": "2026-10-27",
+  "updatedAt": "2026-10-27T12:10:00+05:30",
+  "national": {
+    "24K": { "g": 14329, "chg": 54 },
+    "22K": { "g": 13135, "chg": 50 },
+    "18K": { "g": 10757, "chg": 51 }
+  },
+  "silverPerKg": 220000,
+  "usdInr": 95.12,
+  "benchmarks": {
+    "ibja": { "label": "IBJA benchmark", "note": "999 purity, excl. GST", "g24": 14212, "at": "2026-10-27T12:05:00+05:30" },
+    "mcx": { "label": "MCX futures", "note": "December contract · live", "g24": 14296, "at": "2026-10-27T15:42:00+05:30" },
+    "board": { "label": "Jewellers' board", "note": "Chennai", "g24": 14329, "at": "2026-10-27T09:30:00+05:30" }
+  },
+  "drivers": [
+    { "label": "Global price", "short": "Global", "v": 31 },
+    { "label": "Rupee", "short": "Rupee", "v": 27 },
+    { "label": "Local premium", "short": "Local", "v": -4 }
+  ],
+  "editorNote": {
+    "text": "Gold rose overnight in London and the rupee slipped against the dollar, so the landed price went up. Local premiums eased slightly as buyers waited for Dhanteras.",
+    "by": "[Editor name]",
+    "at": "2026-10-27T12:30:00+05:30"
+  },
+  "watch": [
+    { "when": "5:05 PM", "what": "IBJA evening benchmark" },
+    { "when": "6 Nov", "what": "Dhanteras buying" },
+    { "when": "Daily", "what": "Rupee against the dollar" }
+  ],
+  "festival": { "name": "Dhanteras", "date": "2026-11-06" },
+  "importDuty": { "rate": 0.15, "since": "13 May 2026" },
+  "history": [
+    { "date": "2026-10-18", "24K": 14766, "22K": 13535 },
+    { "date": "2026-10-19", "24K": 14804, "22K": 13570 },
+    { "date": "2026-10-20", "24K": 14608, "22K": 13390 },
+    { "date": "2026-10-21", "24K": 14608, "22K": 13390 },
+    { "date": "2026-10-22", "24K": 14438, "22K": 13235 },
+    { "date": "2026-10-23", "24K": 14248, "22K": 13060 },
+    { "date": "2026-10-24", "24K": 14258, "22K": 13070 },
+    { "date": "2026-10-25", "24K": 14258, "22K": 13070 },
+    { "date": "2026-10-26", "24K": 14275, "22K": 13085 },
+    { "date": "2026-10-27", "24K": 14329, "22K": 13135 }
+  ],
+  "cities": {
+    "chennai":   { "24K": 14329, "22K": 13135, "18K": 10750, "chg24": 54, "chg22": 50, "at": "2026-10-27T09:30:00+05:30" },
+    "mumbai":    { "24K": 14329, "22K": 13135, "18K": 10757, "chg24": 54, "chg22": 50, "at": "2026-10-27T10:00:00+05:30" },
+    "delhi":     { "24K": 14344, "22K": 13150, "18K": 10772, "chg24": 54, "chg22": 50, "at": "2026-10-27T10:15:00+05:30" },
+    "kolkata":   { "24K": 14329, "22K": 13135, "18K": 10757, "chg24": 54, "chg22": 50, "at": "2026-10-27T10:00:00+05:30" },
+    "bengaluru": { "24K": 14329, "22K": 13135, "18K": 10757, "chg24": 54, "chg22": 50, "at": "2026-10-27T09:45:00+05:30" },
+    "hyderabad": { "24K": 14329, "22K": 13135, "18K": 10757, "chg24": 54, "chg22": 50, "at": "2026-10-27T09:45:00+05:30" },
+    "kerala":    { "24K": 14329, "22K": 13135, "18K": 10757, "chg24": 54, "chg22": 50, "at": "2026-10-27T09:30:00+05:30" },
+    "pune":      { "24K": 14329, "22K": 13135, "18K": 10757, "chg24": 54, "chg22": 50, "at": "2026-10-27T10:00:00+05:30" },
+    "ahmedabad": { "24K": 14334, "22K": 13140, "18K": 10762, "chg24": 54, "chg22": 50, "at": "2026-10-27T10:30:00+05:30" },
+    "vadodara":  { "24K": 14334, "22K": 13140, "18K": 10762, "chg24": 54, "chg22": 50, "at": "2026-10-27T10:30:00+05:30" }
+  }
+}

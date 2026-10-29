@@ -1,0 +1,77 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # 12:20 PM IST, Monday to Saturday: just after the IBJA noon benchmark.
+  schedule:
+    - cron: '50 6 * * 1-6'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Update rates from feed (only if RATES_FEED_URL secret is set)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        env:
+          RATES_FEED_URL: ${{ secrets.RATES_FEED_URL }}
+          RATES_FEED_TOKEN: ${{ secrets.RATES_FEED_TOKEN }}
+        run: |
+          node scripts/update-rates.mjs
+          if ! git diff --quiet data/rates.json; then
+            git config user.name "rates-bot"
+            git config user.email "rates-bot@users.noreply.github.com"
+            git commit -am "Update rates for $(node -p "require('./data/rates.json').date")"
+            git push
+          fi
+
+      - name: Read Pages settings
+        id: pages
+        if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
+
+      - name: Build
+        env:
+          SITE_URL: ${{ steps.pages.outputs.base_url || 'http://localhost:4173' }}
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          SITE_INDEX: ${{ vars.SITE_INDEX }}
+          FORM_ENDPOINT: ${{ vars.FORM_ENDPOINT }}
+        run: node build.mjs
+
+      - name: Check links, headings, labels and structured data
+        env:
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: node scripts/check.mjs
+
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
+        with:
+          path: dist
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
