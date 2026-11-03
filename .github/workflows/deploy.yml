@@ -2,7 +2,7 @@ name: Build and deploy
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
   pull_request:
   # IBJA rates (times IST): 12:01 AM every day rolls the date; 12:45 PM after the morning rate;
   # 6:15 PM and 7:15 PM after the evening (closing) rate, Monday to Friday.
@@ -39,6 +39,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # rates are fetched on main; a push to dev is only built and checked
+          ref: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'main' || github.ref }}
 
       - uses: actions/setup-node@v4
         with:
@@ -52,7 +55,13 @@ jobs:
             git config user.name "rates-bot"
             git config user.email "rates-bot@users.noreply.github.com"
             git commit -am "IBJA rates for $(node -p "const r=require('./data/rates.json');r.date+' '+r.session")"
-            git push
+            git push origin HEAD:main
+            # Keep the dev preview on the same rates
+            if git ls-remote --exit-code --heads origin dev >/dev/null; then
+              git fetch -q origin dev && git switch -q dev && git checkout main -- data/rates.json
+              git diff --cached --quiet || { git commit -qm "Rates sync from main"; git push -q origin dev; }
+              git switch -q main
+            fi
           fi
 
       - name: Save rates typed into the Run workflow form
@@ -73,12 +82,23 @@ jobs:
             git config user.name "rates-bot"
             git config user.email "rates-bot@users.noreply.github.com"
             git commit -am "Rates for $(node -p "require('./data/rates.json').date") (entered by hand)"
-            git push
+            git push origin HEAD:main
+            # Keep the dev preview on the same rates
+            if git ls-remote --exit-code --heads origin dev >/dev/null; then
+              git fetch -q origin dev && git switch -q dev && git checkout main -- data/rates.json
+              git diff --cached --quiet || { git commit -qm "Rates sync from main"; git push -q origin dev; }
+              git switch -q main
+            fi
           fi
+
+      - name: SEO checks for the live domain (the same checks Cloudflare runs)
+        env:
+          SITE_URL: https://dailygoldrateindia.com
+        run: node build.mjs && node scripts/check.mjs
 
       - name: Read Pages settings
         id: pages
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         uses: actions/configure-pages@v5
 
       - name: Build
@@ -97,7 +117,7 @@ jobs:
         run: node scripts/check.mjs
 
       - uses: actions/upload-pages-artifact@v3
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         with:
           path: dist
 
