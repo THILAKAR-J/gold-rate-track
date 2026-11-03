@@ -4,7 +4,7 @@ A fast, SEO-first website for daily gold rates in India. Pages are plain HTML bu
 
 > **Status: review build.** Rates are sample data (27 October 2026), [bracketed] details are placeholders, and every page says `noindex` until real rates are entered on https://dailygoldrateindia.com. See [Before launch](#before-launch).
 
-## Pages (31)
+## Pages (29)
 
 | Pages | URLs | Main searches they target |
 |---|---|---|
@@ -15,7 +15,6 @@ A fast, SEO-first website for daily gold rates in India. Pages are plain HTML bu
 | Cities | `/gold-rate/` and `/gold-rate/{city}/` (10 cities) | today gold rate in chennai, gold rate today kerala |
 | History | `/gold-rate-history/`, `/gold-rate-history/2026/october/` | gold rate in october 2026 |
 | Calculator | `/gold-price-calculator/` | gold price calculator with gst |
-| Tamil | `/ta/`, `/ta/chennai/` | தங்கம் விலை இன்று, சென்னை தங்கம் விலை |
 | Footer | `/about/`, `/contact/`, `/privacy-policy/`, `/disclaimer/` | trust pages AdSense needs |
 
 A city page is published only when we have that city's own rate. Month pages are created automatically for every month in the history data.
@@ -25,7 +24,7 @@ A city page is published only when we have that city's own rate. Month pages are
 - **Title** with date and price on every rate page, under about 65 characters, unique per page.
 - **Meta description** 70 to 175 characters, unique per page.
 - **Canonical** on every page, absolute, built from `SITE_URL`.
-- **hreflang** pairs for English and Tamil pages, plus `x-default`, also listed in the sitemap.
+- **English only** for now. Tamil pages (`/ta/`, `/ta/chennai/`) are built in but switched off; set `tamil: true` in `src/config.mjs` to bring them back with hreflang pairs.
 - **JSON-LD**: Organization and WebSite (home), WebPage on every page, BreadcrumbList, FAQPage (matching the visible questions), Dataset on month pages, ItemList on the cities page, WebApplication on the calculator.
 - **sitemap.xml** with `lastmod` and hreflang alternates; **robots.txt** pointing to it.
 - **Open Graph and Twitter** tags with a 1200×630 image; web app manifest and home-screen icons.
@@ -78,8 +77,7 @@ The form refuses numbers that do not add up (24K must be above 22K, 22K above 18
 
 - [ ] Real rates entered (form or feed); `"sample": false` in the data.
 - [ ] Every [bracketed] placeholder filled: owner name, city and postal address, grievance officer, courts' city.
-- [ ] `contact@dailygoldrateindia.com` mailbox working.
-- [ ] Tamil text checked by a Tamil reader.
+- [ ] Contact email is `thilakarseto@gmail.com` for now (`src/config.mjs`); move to a domain mailbox later.
 - [ ] Privacy Policy and Disclaimer reviewed by an Indian lawyer.
 - [ ] Custom domain live with HTTPS, then sitemap submitted.
 - [ ] AdSense applied for in week 3 to 4; `ADSENSE_CLIENT` set after approval.

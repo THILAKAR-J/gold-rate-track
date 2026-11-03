@@ -48,7 +48,7 @@ export function contactPage(ctx) {
     title: 'Contact Us: Report a Wrong Gold Rate or Ask for Your City',
     description: `Contact ${ctx.site.name} to report a wrong gold rate, ask us to add your city or raise a concern. We reply within two working days.`,
     body: `<h2>Email</h2>
-<p>${mail} (${ph('set up this mailbox before launch')})</p>
+<p>${mail}</p>
 <h2>What to include</h2>
 <ul><li><b>A wrong rate:</b> the page link, the rate you see, and the rate you believe is right with its source.</li><li><b>A new city:</b> the city or town, and the jewellers' association or board that announces its rate, if you know it.</li><li><b>Anything else:</b> a short description and how we can reach you.</li></ul>
 <h2>When we reply</h2>

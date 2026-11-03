@@ -174,14 +174,14 @@ details.faq[open] .faq-i{background:var(--ink);color:var(--brass);transform:rota
 
 /* Footer: keyword links + four policy links */
 .foot{background:var(--board);color:var(--bmuted);margin-top:8px}
-.foot-cols{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:24px;padding-top:36px;padding-bottom:24px}
+.foot-cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;padding-top:36px;padding-bottom:24px}
 .foot nav{display:flex;flex-direction:column}
 .foot h2{margin:0 0 6px;font-size:14px;font-weight:700;color:#fff}
 .foot a{color:#C9CDD1;text-decoration:none;font-size:14px;display:flex;align-items:center;min-height:32px}
 .foot a:hover{color:#fff;text-decoration:underline}
 .foot-base{border-top:1px solid var(--bline);padding-top:16px;padding-bottom:24px;display:flex;justify-content:space-between;align-items:center;gap:12px 24px;flex-wrap:wrap;font-size:13px}
 .foot-base p{margin:0;max-width:640px;line-height:1.5}
-.foot-legal{display:flex;gap:4px 16px;flex-wrap:wrap}
+.foot .foot-legal{display:flex;flex-direction:row;gap:4px 16px;flex-wrap:wrap}
 .foot-legal a{min-height:32px}
 
 /* Phone tab bar */

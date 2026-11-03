@@ -55,7 +55,7 @@ function header(ctx, o) {
   const nav = (o.lang === 'ta' ? NAV_TA : NAV_EN)
     .map((n) => `<a href="${ctx.url(n.path)}"${n.id === o.active ? ' aria-current="page"' : ''}>${esc(n.name)}</a>`)
     .join('');
-  const other = o.lang === 'ta'
+  const other = !ctx.site.tamil ? '' : o.lang === 'ta'
     ? `<a class="lang-btn" href="${ctx.url(o.altPath || '/')}" lang="en" hreflang="en">${icon('globe', 16)}English</a>`
     : `<a class="lang-btn" href="${ctx.url(o.altPath || '/ta/')}" lang="ta" hreflang="ta">${icon('globe', 16)}தமிழ்</a>`;
   return `<header class="hdr"><div class="wrap">
@@ -75,8 +75,7 @@ function footerEn(ctx) {
 <nav aria-labelledby="fa"><h2 id="fa">Gold rates</h2>${a('/', 'Gold rate today')}${a('/22-carat-gold-rate/', '22 carat gold rate')}${a('/24-carat-gold-rate/', '24 carat gold rate')}${a('/18-carat-gold-rate/', '18 carat gold rate')}${a('/silver-rate-today/', 'Silver rate today')}${a('/ibja-gold-rate/', 'IBJA gold rate')}</nav>
 <nav aria-labelledby="fb"><h2 id="fb">By weight</h2>${a('/1-gram-gold-rate/', '1 gram gold rate')}${a('/1-pavan-gold-rate/', '1 pavan gold rate')}${a('/10-gram-gold-rate/', '10 gram gold rate')}${a('/1-tola-gold-rate/', '1 tola gold rate')}${a('/gold-price-calculator/', 'Gold price calculator')}</nav>
 <nav aria-labelledby="fc"><h2 id="fc">Top cities</h2>${top}</nav>
-<nav aria-labelledby="fd"><h2 id="fd">Languages</h2>${a('/ta/', 'தமிழ்', 'ta')}${a('/ta/chennai/', 'சென்னை தங்கம் விலை', 'ta')}</nav>
-<nav aria-labelledby="fe"><h2 id="fe">History</h2>${months}${a('/gold-rate-history/', 'All history')}</nav>
+${ctx.site.tamil ? `<nav aria-labelledby="fd"><h2 id="fd">Languages</h2>${a('/ta/', 'தமிழ்', 'ta')}${a('/ta/chennai/', 'சென்னை தங்கம் விலை', 'ta')}</nav>\n` : ''}<nav aria-labelledby="fe"><h2 id="fe">History</h2>${months}${a('/gold-rate-history/', 'All history')}</nav>
 </div>
 <div class="wrap foot-base">
 <p>Rates are indicative, before GST and making charges, and are not investment advice. © ${ctx.year} ${esc(ctx.site.name)}.</p>

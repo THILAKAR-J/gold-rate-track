@@ -85,7 +85,7 @@ ${twoCol(
     lastmod: R.updatedAt,
     html: page(ctx, {
       path: '/', title, description, active: 'home', pageId: 'home', main,
-      alternates: [{ lang: 'en-IN', path: '/' }, { lang: 'ta-IN', path: '/ta/' }], altPath: '/ta/',
+      alternates: ctx.site.tamil ? [{ lang: 'en-IN', path: '/' }, { lang: 'ta-IN', path: '/ta/' }] : undefined, altPath: ctx.site.tamil ? '/ta/' : undefined,
       jsonld: [
         { '@type': 'Organization', '@id': ctx.abs('/') + '#org', name: ctx.site.name, url: ctx.abs('/'), logo: ctx.abs('/icons/icon-512.png') },
         { '@type': 'WebSite', '@id': ctx.abs('/') + '#site', name: ctx.site.name, url: ctx.abs('/'), inLanguage: 'en-IN', publisher: { '@id': ctx.abs('/') + '#org' } },

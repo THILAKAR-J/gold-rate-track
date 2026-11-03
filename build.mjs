@@ -60,7 +60,7 @@ ctx.citySnapshot = {
   date: rates.date,
   cities: Object.fromEntries(cities.map((c) => {
     const sov = c.unit.id === 'sov';
-    return [c.slug, { name: c.name, ta: c.ta ? c.ta.name : null, path: ctx.url(`/gold-rate/${c.slug}/`), taPath: c.ta ? ctx.url(`/ta/${c.slug}/`) : null,
+    return [c.slug, { name: c.name, ta: site.tamil && c.ta ? c.ta.name : null, path: ctx.url(`/gold-rate/${c.slug}/`), taPath: site.tamil && c.ta ? ctx.url(`/ta/${c.slug}/`) : null,
       unit: sov ? `1 ${c.unit.label.toLowerCase()}` : '10 g', grams: sov ? 8 : 10, r22: rates.cities[c.slug]['22K'] }];
   }))
 };
@@ -76,8 +76,7 @@ const pages = [
   historyHub(ctx),
   ...ctx.months.map((m, i) => monthPage(ctx, m, i)),
   calculatorPage(ctx),
-  taHome(ctx),
-  ...cities.filter((c) => c.ta).map((c) => taCity(ctx, c)),
+  ...(site.tamil ? [taHome(ctx), ...cities.filter((c) => c.ta).map((c) => taCity(ctx, c))] : []),
   aboutPage(ctx), contactPage(ctx), privacyPage(ctx), disclaimerPage(ctx),
   notFoundPage(ctx)
 ];

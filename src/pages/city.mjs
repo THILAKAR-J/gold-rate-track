@@ -13,7 +13,7 @@ export function cityPage(ctx, c) {
   const uw = c.unit.label.toLowerCase(); // sovereign | pavan | 10 g
   const lu = localUnit(c);
   const path = `/gold-rate/${c.slug}/`;
-  const hasTa = !!c.ta;
+  const hasTa = ctx.site.tamil && !!(!!c.ta);
   const df = cityDiff(r['22K'], N['22K'].g);
   const vsIndia = df.d === 0 ? 'The rate is the same as the national rate.' : `That is ${inr(Math.abs(df.d))} per gram ${df.d > 0 ? 'above' : 'below'} the national rate.`;
 
