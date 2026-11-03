@@ -1,7 +1,7 @@
 // Gold price calculator (/gold-price-calculator/). Server renders the default estimate; app.js recalculates live.
-import { inr, longDate } from '../lib/format.mjs';
+import { inr, longDate, medDate, clock } from '../lib/format.mjs';
 import { page, crumbs, breadcrumbLd } from '../lib/layout.mjs';
-import { faqHtml, faqLd } from '../lib/parts.mjs';
+import { faqHtml, faqLd, hero, stamp, live } from '../lib/parts.mjs';
 
 export const UG = { g: 1, pavan: 8, tola: 11.6638 };
 
@@ -44,13 +44,14 @@ export function calculatorPage(ctx) {
   ];
 
   const crumbItems = [{ name: 'Home', path: '/' }, { name: 'Gold price calculator' }];
-  const main = `<main id="main" class="wrap main" style="padding-top: 20px">
-<div class="stack" style="gap: 10px">
-${crumbs(ctx, crumbItems)}
-<h1 class="title">What will I actually pay?</h1>
-<p class="lead">Add making charge, wastage and 3% GST to today's rate and see the full bill, line by line. Uses the national rate for <time datetime="${date}">${longDate(date)}</time>.</p>
-</div>
-
+  const main = `<main id="main">
+${hero({
+    crumbsHtml: crumbs(ctx, crumbItems),
+    h1: 'Gold Price Calculator',
+    answer: `Add making charge, wastage and 3% GST to today's rate and see your full bill. Uses the national rate for <time datetime="${date}">${longDate(date)}</time>: 22K <strong class="num">${inr(rates['22K'])}</strong> and 24K <strong class="num">${inr(rates['24K'])}</strong> per gram.`,
+    stampHtml: stamp([`${live}Rates updated <time datetime="${R.updatedAt}">${clock(R.updatedAt)} IST</time>`], R.sample ? 'Sample rates' : '')
+  })}
+<div class="wrap" style="display: flex; flex-direction: column; gap: 24px; padding-top: 32px; padding-bottom: 32px">
 <div class="calc" data-calc>
 <form class="card form-card" aria-labelledby="in-h" novalidate>
 <h2 id="in-h" class="h3" style="font-size: 20px">Your piece</h2>
@@ -100,7 +101,7 @@ ${ZIG}
 <circle cx="60" cy="60" r="44" fill="none" stroke="#9C6B12" stroke-width="18" stroke-dasharray="${a2.toFixed(2)} ${C.toFixed(2)}" stroke-dashoffset="${(-a1).toFixed(2)}" transform="rotate(-90 60 60)" data-arc="2"/>
 <circle cx="60" cy="60" r="44" fill="none" stroke="#12161A" stroke-width="18" stroke-dasharray="${a3.toFixed(2)} ${C.toFixed(2)}" stroke-dashoffset="${(-(a1 + a2)).toFixed(2)}" transform="rotate(-90 60 60)" data-arc="3"/>
 </svg>
-<div class="stack" style="gap: 10px">
+<div style="display: flex; flex-direction: column; gap: 10px">
 <b style="font-size: 15px">Where your money goes</b>
 <ul class="keys">
 <li><i class="sw" style="background: #E8B64C"></i>Gold<b class="num" data-o="pGold">${p(e.gold)}</b></li>
@@ -117,7 +118,7 @@ ${ZIG}
 </aside>
 </div>
 
-<section aria-labelledby="how-h" class="card stack">
+<section aria-labelledby="how-h" class="card">
 <h2 id="how-h" class="h2">How this estimate works</h2>
 <div class="how3">
 <div><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#845A0E" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 18 L7 8 H17 L20 18 Z"/></svg></span><b>Gold value</b><p>Weight in grams times today's rate for the purity. 1 pavan = 8 g, 1 tola = 11.66 g.</p></div>
@@ -127,21 +128,24 @@ ${ZIG}
 <p class="hint" style="margin: 0">This is an estimate, not a quote or financial advice. Your jeweller's bill can differ.</p>
 </section>
 
-<section aria-labelledby="faq-h" class="card stack">
-<h2 id="faq-h" class="h2">Calculator questions</h2>
+<section aria-labelledby="f-h" class="card">
+<h2 id="f-h" class="h2">Calculator questions</h2>
 <div>${faqHtml(faqs)}</div>
 </section>
+</div>
 </main>`;
 
-  const title = 'Gold Price Calculator with Making Charge and GST';
+  const title = 'Gold Price Calculator with Making Charge, Wastage and GST';
   const description = `Work out your gold jewellery bill: weight, purity, making charge, wastage, 3% GST and old-gold exchange, at today's rate of ${inr(rates['22K'])} per gram for 22K.`;
   return {
     path,
+    lastmod: R.updatedAt,
     html: page(ctx, {
       path, title, description, active: 'calc', pageId: 'calc', main,
       data: { rates, ug: UG, sample: !!R.sample },
       jsonld: [
-        breadcrumbLd(ctx, [{ name: 'Home', path: '/' }, { name: 'Gold price calculator', path }]),
+        breadcrumbLd(ctx, crumbItems, path),
+        ctx.webPage(path, title, description),
         { '@type': 'WebApplication', name: title, url: ctx.abs(path), applicationCategory: 'FinanceApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'INR' } },
         faqLd(faqs)
       ]

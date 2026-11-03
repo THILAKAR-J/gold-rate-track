@@ -52,12 +52,14 @@ jobs:
           SITE_URL: ${{ steps.pages.outputs.base_url || 'http://localhost:4173' }}
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
           SITE_INDEX: ${{ vars.SITE_INDEX }}
-          FORM_ENDPOINT: ${{ vars.FORM_ENDPOINT }}
+          ADSENSE_CLIENT: ${{ vars.ADSENSE_CLIENT }}
         run: node build.mjs
 
-      - name: Check links, headings, labels and structured data
+      - name: SEO and quality checks (titles, descriptions, canonicals, hreflang, schema, sitemap, links)
         env:
+          SITE_URL: ${{ steps.pages.outputs.base_url || 'http://localhost:4173' }}
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          SITE_INDEX: ${{ vars.SITE_INDEX }}
         run: node scripts/check.mjs
 
       - uses: actions/upload-pages-artifact@v3

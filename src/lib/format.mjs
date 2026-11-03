@@ -7,7 +7,7 @@ export const inr = (n) => '₹' + Math.round(n).toLocaleString('en-IN');
 export const sinr = (n) => (n < 0 ? '−' : '+') + inr(Math.abs(n));
 
 /** Signed plain number for small table changes: "+38", "−196", "0". */
-export const sgn = (n) => (n > 0 ? '+' + n : n < 0 ? '−' + Math.abs(n) : '0');
+export const sgn = (n) => (n > 0 ? '+' + n.toLocaleString('en-IN') : n < 0 ? '−' + Math.abs(n).toLocaleString('en-IN') : '0');
 
 export const esc = (s) =>
   String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));

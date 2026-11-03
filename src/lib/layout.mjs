@@ -1,151 +1,145 @@
-// Page shell: <head>, ticker, header, footer, phone tab bar and cookie banner.
-import { esc, inr } from './format.mjs';
+// Page shell: <head> with all SEO tags, header, footer and phone tab bar.
+import { esc } from './format.mjs';
 
-export const LOGO = `<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect x="1" y="1" width="32" height="32" rx="9" fill="#12161A"/><path d="M9 23 L12 12 H22 L25 23 Z" fill="#E8B64C"/><path d="M12 12 L14 9 H20 L22 12" fill="none" stroke="#E8B64C" stroke-width="1.6"/></svg>`;
+export const LOGO = `<svg width="32" height="32" viewBox="0 0 34 34" aria-hidden="true"><rect x="1" y="1" width="32" height="32" rx="9" fill="#12161A"/><path d="M9 23 L12 12 H22 L25 23 Z" fill="#E8B64C"/><path d="M6 27 H28" stroke="#E8B64C" stroke-width="1.6" stroke-linecap="round"/></svg>`;
 
 const ICON = {
-  rates: '<path d="M5 18 L8 8 H16 L19 18 Z"/>',
+  today: '<path d="M5 18 L8 8 H16 L19 18 Z"/>',
   cities: '<path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+  history: '<path d="M4 19 L9 12 L13 15 L20 6"/>',
   calc: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"/>',
-  bell: '<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>'
+  pin: '<path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>'
 };
-const icon = (k) =>
-  `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg>`;
+export const icon = (k, size = 22) =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg>`;
 
-/** Breadcrumb trail, rendered as nav > ol. items: [{name, path?}] (last item is the current page). */
-export function crumbs(ctx, items) {
+/** Breadcrumb trail as nav > ol. items: [{name, path?}], the last item is the current page. */
+export function crumbs(ctx, items, { light = false, label = 'Breadcrumb' } = {}) {
   const li = items
     .map((it, i) =>
       i === items.length - 1
         ? `<li aria-current="page">${esc(it.name)}</li>`
-        : `<li><a href="${ctx.url(it.path)}">${esc(it.name)}</a></li><li aria-hidden="true">›</li>`
+        : (it.path ? `<li><a href="${ctx.url(it.path)}">${esc(it.name)}</a></li>` : `<li>${esc(it.name)}</li>`) + '<li aria-hidden="true">›</li>'
     )
     .join('');
-  return `<nav class="crumbs" aria-label="Breadcrumb"><ol>${li}</ol></nav>`;
+  return `<nav class="crumbs${light ? ' light' : ''}" aria-label="${esc(label)}"><ol>${li}</ol></nav>`;
 }
 
-export function breadcrumbLd(ctx, items) {
+/** BreadcrumbList for the same trail; steps without their own page are left out. */
+export function breadcrumbLd(ctx, items, selfPath) {
+  const steps = items
+    .map((it, i) => (i === items.length - 1 ? { name: it.name, path: selfPath } : it))
+    .filter((it) => it.path);
   return {
     '@type': 'BreadcrumbList',
-    itemListElement: items.map((it, i) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      name: it.name,
-      ...(it.path ? { item: ctx.abs(it.path) } : {})
-    }))
+    itemListElement: steps.map((it, i) => ({ '@type': 'ListItem', position: i + 1, name: it.name, item: ctx.abs(it.path) }))
   };
 }
 
-function ticker(ctx, items) {
-  if (!items) return '';
-  const li = items
-    .map((t) => `<li><span>${esc(t.k)}</span> <b class="num">${esc(t.v)}</b>${t.u ? ` <span class="u num">${esc(t.u)}</span>` : ''}</li>`)
-    .join('');
-  return `<div class="ticker" role="region" aria-label="Today's rates at a glance"><div class="wrap"><ul>${li}</ul><div class="meta">${
-    ctx.rates.sample ? '<span class="tag-sample">Sample rates</span>' : ''
-  }</div></div></div>`;
-}
-
-export function defaultTicker(ctx) {
-  const n = ctx.rates.national;
-  return [
-    { k: '24K', v: inr(n['24K'].g), u: (n['24K'].chg >= 0 ? '▲' : '▼') + Math.abs(n['24K'].chg) },
-    { k: '22K', v: inr(n['22K'].g), u: (n['22K'].chg >= 0 ? '▲' : '▼') + Math.abs(n['22K'].chg) },
-    { k: '18K', v: inr(n['18K'].g), u: (n['18K'].chg >= 0 ? '▲' : '▼') + Math.abs(n['18K'].chg) },
-    { k: 'Silver', v: inr(ctx.rates.silverPerKg) + '/kg' },
-    { k: 'USD/INR', v: '₹' + ctx.rates.usdInr.toFixed(2) }
-  ];
-}
-
-const NAV = [
-  { id: 'home', name: 'Gold rate', path: '/' },
+const NAV_EN = [
+  { id: 'home', name: "Today's rate", path: '/' },
   { id: 'cities', name: 'Cities', path: '/gold-rate/' },
-  { id: 'calc', name: 'Calculator', path: '/gold-price-calculator/' },
-  { id: 'contact', name: 'Contact', path: '/grievance-redressal/' }
+  { id: '22k', name: '22 carat', path: '/22-carat-gold-rate/' },
+  { id: '24k', name: '24 carat', path: '/24-carat-gold-rate/' },
+  { id: 'silver', name: 'Silver', path: '/silver-rate-today/' },
+  { id: 'history', name: 'History', path: '/gold-rate-history/' },
+  { id: 'calc', name: 'Calculator', path: '/gold-price-calculator/' }
+];
+const NAV_TA = [
+  { id: 'home', name: 'இன்றைய விலை', path: '/ta/' },
+  { id: 'cities', name: 'சென்னை', path: '/ta/chennai/' }
 ];
 
-function header(ctx, active) {
-  const links = NAV.map(
-    (n) => `<a href="${ctx.url(n.path)}"${n.id === active ? ' aria-current="page"' : ''}>${n.name}</a>`
-  ).join('');
+function header(ctx, o) {
+  const nav = (o.lang === 'ta' ? NAV_TA : NAV_EN)
+    .map((n) => `<a href="${ctx.url(n.path)}"${n.id === o.active ? ' aria-current="page"' : ''}>${esc(n.name)}</a>`)
+    .join('');
+  const other = o.lang === 'ta'
+    ? `<a class="lang-btn" href="${ctx.url(o.altPath || '/')}" lang="en" hreflang="en">${icon('globe', 16)}English</a>`
+    : `<a class="lang-btn" href="${ctx.url(o.altPath || '/ta/')}" lang="ta" hreflang="ta">${icon('globe', 16)}தமிழ்</a>`;
   return `<header class="hdr"><div class="wrap">
-<a class="logo" href="${ctx.url('/')}" aria-label="${esc(ctx.site.name)}, home">${LOGO}<span>${esc(ctx.site.name)}</span></a>
-<nav id="site-nav" class="nav" aria-label="Main">${links}</nav>
-<button type="button" class="menu-btn" aria-controls="site-nav" aria-expanded="false" aria-label="Menu" data-menu><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12161A" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-<a class="btn btn-dark cta" href="${ctx.url('/#alerts')}">Get rate alerts</a>
+<a class="logo" href="${ctx.url(o.lang === 'ta' ? '/ta/' : '/')}" aria-label="${esc(ctx.site.name)}, ${o.lang === 'ta' ? 'முகப்பு' : 'home'}">${LOGO}<span>GoldRate<em>Track</em></span></a>
+<nav id="site-nav" class="nav" aria-label="${o.lang === 'ta' ? 'முதன்மை' : 'Main'}">${nav}</nav>
+${other}
+<button type="button" class="menu-btn" aria-controls="site-nav" aria-expanded="false" aria-label="${o.lang === 'ta' ? 'பட்டியல்' : 'Menu'}" data-menu><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12161A" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
 </div></header>`;
 }
 
-function footer(ctx) {
-  const a = (path, name) => `<a href="${ctx.url(path)}">${name}</a>`;
-  const city = (slug) => {
-    const c = ctx.cities.find((x) => x.slug === slug);
-    return a(`/gold-rate/${slug}/`, c.name);
-  };
+function footerEn(ctx) {
+  const a = (p, n, lang) => `<a href="${ctx.url(p)}"${lang ? ` lang="${lang}" hreflang="${lang}"` : ''}>${n}</a>`;
+  const top = ['chennai', 'hyderabad', 'bengaluru', 'kerala', 'mumbai', 'delhi'].map((s) => a(`/gold-rate/${s}/`, esc(ctx.cityBySlug(s).name))).join('');
+  const months = ctx.months.slice(-2).reverse().map((m) => a(m.path, `${m.label}`)).join('');
   return `<footer class="foot">
 <div class="wrap foot-cols">
-<nav aria-labelledby="f1"><h2 id="f1">Rates</h2>${a('/', 'Gold rate today')}${a('/#weights-h', 'Price by weight')}${a('/#trend-h', 'Last 10 days')}${a('/gold-rate/', 'All cities')}</nav>
-<nav aria-labelledby="f2"><h2 id="f2">Cities</h2>${['chennai', 'mumbai', 'delhi', 'bengaluru', 'hyderabad'].map(city).join('')}</nav>
-<nav aria-labelledby="f3"><h2 id="f3">Tools</h2>${a('/gold-price-calculator/', 'Price calculator')}${a('/gold-rate/chennai/#plan-h', 'Sovereign planner')}${a('/#alerts', 'Rate alerts')}</nav>
-<nav aria-labelledby="f4"><h2 id="f4">${esc(ctx.site.name)}</h2>${a('/disclaimer/#rates', 'How we source rates')}${a('/disclaimer/#editorial', 'Editorial policy')}${a('/disclaimer/#corrections', 'Corrections')}${a('/grievance-redressal/', 'Contact')}</nav>
-<nav aria-labelledby="f5"><h2 id="f5">Legal</h2>${a('/privacy-policy/', 'Privacy Policy')}${a('/terms-of-use/', 'Terms of Use')}${a('/disclaimer/', 'Disclaimer')}${a('/grievance-redressal/', 'Grievance redressal')}<button type="button" class="linkbtn" data-cookie-open>Cookie settings</button></nav>
+<nav aria-labelledby="fa"><h2 id="fa">Gold rates</h2>${a('/', 'Gold rate today')}${a('/22-carat-gold-rate/', '22 carat gold rate')}${a('/24-carat-gold-rate/', '24 carat gold rate')}${a('/18-carat-gold-rate/', '18 carat gold rate')}${a('/silver-rate-today/', 'Silver rate today')}${a('/ibja-gold-rate/', 'IBJA gold rate')}</nav>
+<nav aria-labelledby="fb"><h2 id="fb">By weight</h2>${a('/1-gram-gold-rate/', '1 gram gold rate')}${a('/1-pavan-gold-rate/', '1 pavan gold rate')}${a('/10-gram-gold-rate/', '10 gram gold rate')}${a('/1-tola-gold-rate/', '1 tola gold rate')}${a('/gold-price-calculator/', 'Gold price calculator')}</nav>
+<nav aria-labelledby="fc"><h2 id="fc">Top cities</h2>${top}</nav>
+<nav aria-labelledby="fd"><h2 id="fd">Languages</h2>${a('/ta/', 'தமிழ்', 'ta')}${a('/ta/chennai/', 'சென்னை தங்கம் விலை', 'ta')}</nav>
+<nav aria-labelledby="fe"><h2 id="fe">History</h2>${months}${a('/gold-rate-history/', 'All history')}</nav>
 </div>
 <div class="wrap foot-base">
-<p>Rates are indicative and exclude GST, making charges and other levies. They are information, not investment advice. ${esc(ctx.site.name)} is not affiliated with IBJA, MCX or any jeweller. <a href="${ctx.url('/disclaimer/')}">Read the full disclaimer</a>.</p>
-<p>© ${ctx.year} <span class="ph">${esc(ctx.site.legalName)}</span></p>
+<p>Rates are indicative, before GST and making charges, and are not investment advice. © ${ctx.year} ${esc(ctx.site.name)}.</p>
+<nav class="foot-legal" aria-label="Site information">${a('/about/', 'About')}${a('/contact/', 'Contact')}${a('/privacy-policy/', 'Privacy Policy')}${a('/disclaimer/', 'Disclaimer')}</nav>
 </div>
 </footer>`;
 }
 
-function tabbar(ctx, active) {
-  const t = (id, path, ic, name) =>
-    `<a href="${ctx.url(path)}"${id === active ? ' aria-current="page"' : ''}>${icon(ic)}${name}</a>`;
-  return `<nav class="tabbar" aria-label="Quick links">${t('home', '/', 'rates', 'Rates')}${t('cities', '/gold-rate/', 'cities', 'Cities')}${t(
-    'calc',
-    '/gold-price-calculator/',
-    'calc',
-    'Calculate'
-  )}${t('alerts', '/#alerts', 'bell', 'Alerts')}</nav>`;
+function footerTa(ctx) {
+  const a = (p, n, lang) => `<a href="${ctx.url(p)}"${lang ? ` lang="${lang}" hreflang="${lang}"` : ''}>${n}</a>`;
+  return `<footer class="foot">
+<div class="wrap foot-cols">
+<nav aria-labelledby="fa"><h2 id="fa">தங்கம் விலை</h2>${a('/ta/', 'இன்றைய தங்கம் விலை')}${a('/ta/chennai/', 'சென்னை தங்கம் விலை')}</nav>
+<nav aria-labelledby="fb"><h2 id="fb">English</h2>${a('/', 'Gold rate today', 'en')}${a('/gold-rate/chennai/', 'Gold rate in Chennai', 'en')}${a('/22-carat-gold-rate/', '22 carat gold rate', 'en')}</nav>
+</div>
+<div class="wrap foot-base">
+<p>விலைகள் தோராயமானவை. GST, செய்கூலி சேர்க்கப்படவில்லை. இது முதலீட்டு ஆலோசனை அல்ல. © ${ctx.year} ${esc(ctx.site.name)}.</p>
+<nav class="foot-legal" aria-label="தள தகவல்">${a('/about/', 'About', 'en')}${a('/contact/', 'Contact', 'en')}${a('/privacy-policy/', 'Privacy Policy', 'en')}${a('/disclaimer/', 'Disclaimer', 'en')}</nav>
+</div>
+</footer>`;
 }
 
-function cookie(ctx) {
-  return `<div class="cookie" role="region" aria-label="Cookie choices" data-cookie hidden>
-<div class="cookie-box">
-<div class="cookie-row">
-<div class="cookie-txt"><b>Your choice on cookies</b><p>Essential cookies run this site. Analytics and advertising cookies stay off unless you allow them. Change this any time from Cookie settings in the footer. <a href="${ctx.url(
-    '/privacy-policy/#cookies'
-  )}">How we use cookies</a></p></div>
-<div class="cookie-acts">
-<button type="button" class="btn btn-line" data-cookie-act="reject">Reject all</button>
-<button type="button" class="btn btn-line" data-cookie-act="custom" aria-expanded="false" aria-controls="cookie-prefs">Customise</button>
-<button type="button" class="btn btn-line" data-cookie-act="accept">Accept all</button>
-</div>
-</div>
-<fieldset class="cookie-prefs" id="cookie-prefs" hidden>
-<legend class="sr">Cookie categories</legend>
-<label class="consent"><input type="checkbox" checked disabled><span><b>Essential</b> · always on. Security and remembering this choice.</span></label>
-<label class="consent"><input type="checkbox" data-pref="analytics"><span><b>Analytics</b>. Counts visits so we can improve the site.</span></label>
-<label class="consent"><input type="checkbox" data-pref="ads"><span><b>Advertising</b>. Lets ad partners show and measure ads.</span></label>
-<button type="button" class="btn btn-dark" data-cookie-act="save">Save choices</button>
-</fieldset>
-</div>
-</div>`;
+function tabbar(ctx, o) {
+  const items = o.lang === 'ta'
+    ? [['home', '/ta/', 'today', 'இன்று'], ['cities', '/ta/chennai/', 'cities', 'சென்னை'], ['en', '/', 'globe', 'English']]
+    : [['home', '/', 'today', 'Today'], ['cities', '/gold-rate/', 'cities', 'Cities'], ['history', '/gold-rate-history/', 'history', 'History'], ['calc', '/gold-price-calculator/', 'calc', 'Calculator']];
+  return `<nav class="tabbar" aria-label="${o.lang === 'ta' ? 'விரைவு இணைப்புகள்' : 'Quick links'}">${items
+    .map(([id, p, ic, n]) => `<a href="${ctx.url(p)}"${id === o.active ? ' aria-current="page"' : ''}>${icon(ic)}${esc(n)}</a>`)
+    .join('')}</nav>`;
+}
+
+/** An ad slot. Renders nothing until ADSENSE_CLIENT is set, so there are no empty boxes at launch. */
+export function adSlot(ctx, kind) {
+  if (!ctx.site.adsenseClient) return '';
+  const h = { lb: 90, mr: 250, sky: 600 }[kind] || 250;
+  return `<div class="ad ad-${kind}" style="min-height:${h}px"><ins class="adsbygoogle" style="display:block;min-height:${h}px" data-ad-client="${esc(ctx.site.adsenseClient)}" data-ad-format="auto" data-full-width-responsive="true"></ins></div>`;
 }
 
 /**
  * Full HTML document.
- * opts: { path, title, description, active, main (html), jsonld (array), ticker (array|null),
- *         pageId, data (object for app.js), noindex, ogType }
+ * o: { path, lang ('en'|'ta'), title, description, active, main, jsonld[], pageId, data, noindex,
+ *      alternates: [{lang:'en-IN'|'ta-IN', path}], altPath (the other language's page), ogType }
  */
 export function page(ctx, o) {
+  const lang = o.lang || 'en';
   const canonical = ctx.abs(o.path);
-  const robots = o.noindex || !ctx.site.index ? 'noindex,follow' : 'index,follow,max-image-preview:large';
+  const robots = o.noindex || !ctx.site.index ? 'noindex,follow' : 'index,follow,max-image-preview:large,max-snippet:-1';
+  const alts = o.alternates && o.alternates.length > 1
+    ? o.alternates.map((a) => `<link rel="alternate" hreflang="${a.lang}" href="${ctx.abs(a.path)}">`).join('\n') +
+      `\n<link rel="alternate" hreflang="x-default" href="${ctx.abs((o.alternates.find((a) => a.lang.startsWith('en')) || o.alternates[0]).path)}">`
+    : '';
   const ld = o.jsonld && o.jsonld.length
     ? `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': o.jsonld }).replace(/</g, '\\u003c')}</script>`
     : '';
   const data = o.data ? `<script type="application/json" id="page-data">${JSON.stringify(o.data).replace(/</g, '\\u003c')}</script>` : '';
+  const tamilFont = lang === 'ta'
+    ? '<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400..800&display=swap">\n'
+    : '';
+  const ads = ctx.site.adsenseClient
+    ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${esc(ctx.site.adsenseClient)}" crossorigin="anonymous"></script>\n`
+    : '';
   return `<!doctype html>
-<html lang="en-IN">
+<html lang="${lang === 'ta' ? 'ta-IN' : 'en-IN'}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -153,34 +147,37 @@ export function page(ctx, o) {
 <meta name="description" content="${esc(o.description)}">
 <link rel="canonical" href="${canonical}">
 <meta name="robots" content="${robots}">
+${alts}
 <meta name="theme-color" content="#0E1317">
 <link rel="icon" href="${ctx.asset('favicon.svg')}" type="image/svg+xml">
+<link rel="apple-touch-icon" href="${ctx.asset('icons/icon-180.png')}">
+<link rel="manifest" href="${ctx.asset('manifest.webmanifest')}">
 <link rel="preload" href="${ctx.asset('assets/fonts/inter-var.woff2')}" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="${ctx.asset('assets/kanak.css')}">
+${tamilFont}<link rel="stylesheet" href="${ctx.asset('assets/site.css')}">
 <meta property="og:type" content="${o.ogType || 'website'}">
 <meta property="og:site_name" content="${esc(ctx.site.name)}">
-<meta property="og:locale" content="en_IN">
+<meta property="og:locale" content="${lang === 'ta' ? 'ta_IN' : 'en_IN'}">
 <meta property="og:title" content="${esc(o.title)}">
 <meta property="og:description" content="${esc(o.description)}">
 <meta property="og:url" content="${canonical}">
 <meta property="og:image" content="${ctx.abs('/og.png')}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${esc(ctx.site.name)}: gold rate today, city by city">
 <meta name="twitter:card" content="summary_large_image">
 ${ld}
-<script src="${ctx.asset('assets/app.js')}" defer></script>
+${ads}<script src="${ctx.asset('assets/app.js')}" defer></script>
 </head>
-<body data-page="${o.pageId}" data-base="${ctx.base}">
+<body data-page="${o.pageId}"${lang === 'ta' ? ' class="ta"' : ''}>
 <div class="page">
-<a class="skip" href="#main">Skip to main content</a>
-${ticker(ctx, o.ticker === undefined ? defaultTicker(ctx) : o.ticker)}
-${header(ctx, o.active)}
+<a class="skip" href="#main">${lang === 'ta' ? 'உள்ளடக்கத்திற்குச் செல்லவும்' : 'Skip to main content'}</a>
+${header(ctx, { ...o, lang })}
 ${o.main}
-${footer(ctx)}
-${tabbar(ctx, o.active)}
-${cookie(ctx)}
+${lang === 'ta' ? footerTa(ctx) : footerEn(ctx)}
+${tabbar(ctx, { ...o, lang })}
 </div>
 ${data}
+<script type="application/json" id="city-data">${JSON.stringify(ctx.citySnapshot).replace(/</g, '\\u003c')}</script>
 </body>
 </html>
 `;

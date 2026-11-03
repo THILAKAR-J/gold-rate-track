@@ -1,72 +1,72 @@
-# Kanak: Gold Rate Today
+# Gold Rate Track (goldratetrack.com)
 
-A fast, SEO-first website for daily gold rates in India. Pages are plain HTML built from one data file, so every rate is in the page source (Google can read it, and it loads instantly). A small script adds the interactive parts.
+A fast, SEO-first website for daily gold rates in India. Pages are plain HTML built from one data file, so every rate is in the page source: Google reads it on the first crawl and phones load it instantly. A small script adds the city filter, the saved-city bar and the calculator.
 
-> **Status: preview.** Rates are sample data, legal pages are drafts, and the site tells search engines not to index it. See [Before launch](#before-launch).
+> **Status: review build.** Rates are sample data (27 October 2026), [bracketed] details are placeholders, and every page says `noindex` until launch. See [Before launch](#before-launch).
 
-## Pages
+## Pages (31)
 
-| Page | URL | What it does |
+| Pages | URLs | Main searches they target |
 |---|---|---|
-| Home | `/` | Rate board (purity and weight toggles), 10-day range meters, "why gold moved" chart, price by weight, 10-day trend, city finder, bill build-up, FAQ, WhatsApp alert sign-up |
-| Cities hub | `/gold-rate/` | Search and filter all cities, plus one comparison table |
-| City pages ×10 | `/gold-rate/chennai/` … | Local board, city vs India, price by weight in local units (sovereign, pavan or 10 g), budget planner, nearby cities, FAQ |
-| Calculator | `/gold-price-calculator/` | Making charge, wastage, stones, 3% GST and old-gold exchange, with a receipt, a donut chart, WhatsApp share and print |
-| Legal centre | `/privacy-policy/`, `/terms-of-use/`, `/disclaimer/`, `/grievance-redressal/` | DPDP-style privacy policy, terms, disclaimer and disclosures, grievance officer page with a contact form |
-| 404 | any unknown URL | Friendly not-found page |
+| Home | `/` | gold rate today, today gold rate, gold price today |
+| Carat | `/22-carat-gold-rate/`, `/24-carat-gold-rate/`, `/18-carat-gold-rate/` | 22 carat gold price, 18 carat gold rate today, 916 gold rate |
+| Silver, IBJA | `/silver-rate-today/`, `/ibja-gold-rate/` | silver rate today, ibja gold rate today |
+| Units | `/1-gram-gold-rate/`, `/1-pavan-gold-rate/`, `/10-gram-gold-rate/`, `/1-tola-gold-rate/` | 1 pavan gold rate today, 10 gram gold rate |
+| Cities | `/gold-rate/` and `/gold-rate/{city}/` (10 cities) | today gold rate in chennai, gold rate today kerala |
+| History | `/gold-rate-history/`, `/gold-rate-history/2026/october/` | gold rate in october 2026 |
+| Calculator | `/gold-price-calculator/` | gold price calculator with gst |
+| Tamil | `/ta/`, `/ta/chennai/` | தங்கம் விலை இன்று, சென்னை தங்கம் விலை |
+| Footer | `/about/`, `/contact/`, `/privacy-policy/`, `/disclaimer/` | trust pages AdSense needs |
 
-## How it works
+A city page is published only when we have that city's own rate. Month pages are created automatically for every month in the history data.
 
-```
-data/rates.json     today's rates, 10-day history, city rates, benchmarks, editor note
-data/cities.json    city list: name, state, region, local unit, nearby cities
-src/pages/*.mjs     page templates (home, city, calculator, legal)
-src/lib/*.mjs       layout (header, footer, cookie banner), shared parts, formatting
-src/content/*.html  legal page text (drafts for review)
-public/             CSS, JavaScript, self-hosted Inter font, favicon, social image
-build.mjs           builds everything into dist/
-```
+## SEO built in
 
-No framework and no npm dependencies. Node 20 or newer is all you need.
+- **Title** with date and price on every rate page, under about 65 characters, unique per page.
+- **Meta description** 70 to 175 characters, unique per page.
+- **Canonical** on every page, absolute, built from `SITE_URL`.
+- **hreflang** pairs for English and Tamil pages, plus `x-default`, also listed in the sitemap.
+- **JSON-LD**: Organization and WebSite (home), WebPage on every page, BreadcrumbList, FAQPage (matching the visible questions), Dataset on month pages, ItemList on the cities page, WebApplication on the calculator.
+- **sitemap.xml** with `lastmod` and hreflang alternates; **robots.txt** pointing to it.
+- **Open Graph and Twitter** tags with a 1200×630 image; web app manifest and home-screen icons.
+- `noindex` on every page until `SITE_INDEX=true`, so the review address never competes with the real domain.
+
+`node scripts/check.mjs` checks all of the above, plus headings, labels, duplicate ids, internal links and anchors, on every build. The GitHub workflow will not publish if a check fails.
 
 ## Run it locally
 
 ```bash
-npm run dev        # builds and serves at http://localhost:4173
-npm run check      # builds, then checks links, anchors, headings, labels and JSON-LD
+npm run dev        # build and serve at http://localhost:4173
+npm run check      # build, then run every SEO and quality check
 ```
 
-## Updating the rates every day
+## Daily rates
 
-The GitHub Actions workflow runs on every push and at **12:20 PM IST, Monday to Saturday**.
+The workflow runs on every push and at **12:20 PM IST, Monday to Saturday**.
 
-- **Manually:** edit `data/rates.json` and push. The build checks the file and refuses to publish broken data (for example, if the last history day does not match today's rate).
-- **Automatically:** add a repository secret `RATES_FEED_URL` (and optionally `RATES_FEED_TOKEN`) pointing to a JSON feed. `scripts/update-rates.mjs` merges it into `data/rates.json`, commits it and the site rebuilds. The expected feed format is documented at the top of that script.
+- **By hand:** edit `data/rates.json` and push. The build refuses data that does not add up.
+- **Automatic:** add a repository secret `RATES_FEED_URL` (and `RATES_FEED_TOKEN` if needed). `scripts/update-rates.mjs` merges the feed, commits it and the site rebuilds. Use a source licensed for republishing.
 
-Use a rate source you are licensed to republish (for example a paid bullion data API or IBJA under agreement). Do not scrape other gold-rate websites.
-
-## Deploying on GitHub Pages
-
-One-time setup: **Settings → Pages → Build and deployment → Source: GitHub Actions**. After that, every push to `main` publishes the site at `https://<user>.github.io/<repo>/`.
-
-Optional repository **variables** (Settings → Secrets and variables → Actions → Variables):
+## Settings (GitHub → Settings → Secrets and variables → Actions → Variables)
 
 | Variable | Effect |
 |---|---|
-| `SITE_INDEX` = `true` | Lets search engines index the site. Leave unset until launch. |
-| `FORM_ENDPOINT` | URL that receives the alert and grievance forms as JSON (Formspree, a Google Apps Script, or your own API). Without it the forms validate but send nothing, and say so. |
+| `SITE_INDEX` = `true` | Lets search engines index the site. Set only on the real domain at launch. |
+| `ADSENSE_CLIENT` = `ca-pub-…` | Turns on the ad slots (one under the city table, two in the side rail). Leave empty until AdSense approves the site. |
 
-For a custom domain, add it under Settings → Pages; the build picks up the new address automatically.
+## Moving to goldratetrack.com
+
+1. Buy the domain; also buy goldratetrack.in and forward it to the .com.
+2. GitHub → Settings → Pages → Custom domain: `goldratetrack.com`, tick "Enforce HTTPS". Add the DNS records GitHub shows.
+3. The next build uses the new address automatically for canonicals, hreflang and the sitemap.
+4. Then set `SITE_INDEX=true`, and submit `https://goldratetrack.com/sitemap.xml` in Google Search Console and Bing Webmaster Tools.
 
 ## Before launch
 
-- [ ] Replace sample rates with a licensed data feed and set `"sample": false` (the feed script does this).
-- [ ] Fill every `[bracketed]` placeholder: company legal name, editor, grievance officer, data-protection contact, addresses, dates, rate sources per city.
-- [ ] Have an Indian lawyer review the Privacy Policy, Terms, Disclaimer and Grievance pages.
-- [ ] Connect the forms (`FORM_ENDPOINT`) and a WhatsApp Business provider for alerts, with consent records.
-- [ ] Load analytics or ads only after cookie consent (listen for the `kanak:consent` event in `public/assets/app.js`).
-- [ ] Set `SITE_INDEX=true`, then submit `sitemap.xml` in Google Search Console.
-
-## Built-in quality checks
-
-`npm run check` fails the build if any page has a broken internal link or anchor, more than one H1, a skipped heading level, an unlabelled form field, duplicate ids, invalid JSON-LD, or leftover `undefined`/`NaN` text.
+- [ ] Licensed rate feed connected; `"sample": false` in the data (the feed script sets it).
+- [ ] Every [bracketed] placeholder filled: owner name and address, rate sources per city, grievance officer.
+- [ ] `contact@goldratetrack.com` mailbox working.
+- [ ] Tamil text checked by a Tamil reader.
+- [ ] Privacy Policy and Disclaimer reviewed by an Indian lawyer.
+- [ ] Custom domain live, then `SITE_INDEX=true`, then sitemap submitted.
+- [ ] AdSense applied for in week 3 to 4; `ADSENSE_CLIENT` set after approval.
