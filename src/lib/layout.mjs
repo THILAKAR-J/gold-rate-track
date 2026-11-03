@@ -1,14 +1,17 @@
 // Page shell: <head> with all SEO tags, header, footer and phone tab bar.
 import { esc } from './format.mjs';
 
-export const LOGO = `<svg width="32" height="32" viewBox="0 0 34 34" aria-hidden="true"><rect x="1" y="1" width="32" height="32" rx="9" fill="#12161A"/><path d="M9 23 L12 12 H22 L25 23 Z" fill="#E8B64C"/><path d="M6 27 H28" stroke="#E8B64C" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+export const LOGO = `<svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="17" fill="#6E1A2A"/><circle cx="18" cy="18" r="12" fill="none" stroke="#F2C35B" stroke-width="2"/><path d="M11 21h14l-2.5-6h-9z" fill="#F2C35B"/></svg>`;
+const LOGO_TEXT = '<span class="logo-t"><b>Daily Gold Rate</b><span>INDIA</span></span>';
 
 const ICON = {
-  today: '<path d="M5 18 L8 8 H16 L19 18 Z"/>',
+  today: '<path d="M4 17h16l-3-8H7z"/>',
   cities: '<path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
   history: '<path d="M4 19 L9 12 L13 15 L20 6"/>',
   calc: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"/>',
   pin: '<path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
   globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>'
 };
 export const icon = (k, size = 22) =>
@@ -59,22 +62,24 @@ function header(ctx, o) {
     ? `<a class="lang-btn" href="${ctx.url(o.altPath || '/')}" lang="en" hreflang="en">${icon('globe', 16)}English</a>`
     : `<a class="lang-btn" href="${ctx.url(o.altPath || '/ta/')}" lang="ta" hreflang="ta">${icon('globe', 16)}தமிழ்</a>`;
   return `<header class="hdr"><div class="wrap">
-<a class="logo" href="${ctx.url(o.lang === 'ta' ? '/ta/' : '/')}" aria-label="${esc(ctx.site.name)}, ${o.lang === 'ta' ? 'முகப்பு' : 'home'}">${LOGO}<span>DailyGoldRate<em>India</em></span></a>
-<nav id="site-nav" class="nav" aria-label="${o.lang === 'ta' ? 'முதன்மை' : 'Main'}">${nav}</nav>
+<a class="logo" href="${ctx.url(o.lang === 'ta' ? '/ta/' : '/')}" aria-label="${esc(ctx.site.name)}, home">${LOGO}${LOGO_TEXT}</a>
+<nav id="site-nav" class="nav" aria-label="Main">${nav}</nav>
+<form class="hsearch" role="search" action="${ctx.url('/gold-rate/')}" method="get"><label class="sr" for="hq">Find your city</label><input id="hq" name="q" type="search" placeholder="Find your city" autocomplete="off"></form>
 ${other}
-<button type="button" class="menu-btn" aria-controls="site-nav" aria-expanded="false" aria-label="${o.lang === 'ta' ? 'பட்டியல்' : 'Menu'}" data-menu><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12161A" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+<div class="hdr-tools"><a class="icon-btn" href="${ctx.url('/gold-rate/')}" aria-label="Find your city">${icon('search', 20)}</a><button type="button" class="icon-btn menu-btn" aria-controls="site-nav" aria-expanded="false" aria-label="Menu" data-menu>${icon('menu', 20)}</button></div>
 </div></header>`;
 }
 
 function footerEn(ctx) {
   const a = (p, n, lang) => `<a href="${ctx.url(p)}"${lang ? ` lang="${lang}" hreflang="${lang}"` : ''}>${n}</a>`;
-  const top = ['chennai', 'hyderabad', 'bengaluru', 'kerala', 'mumbai', 'delhi'].map((s) => a(`/gold-rate/${s}/`, esc(ctx.cityBySlug(s).name))).join('');
+  const top = ['chennai', 'kerala', 'hyderabad', 'bengaluru', 'mumbai', 'delhi'].map((s) => a(`/gold-rate/${s}/`, esc(ctx.cityBySlug(s).name))).join('');
   const months = ctx.months.slice(-2).reverse().map((m) => a(m.path, `${m.label}`)).join('');
   return `<footer class="foot">
-<div class="wrap foot-cols">
-<nav aria-labelledby="fa"><h2 id="fa">Gold rates</h2>${a('/', 'Gold rate today')}${a('/22-carat-gold-rate/', '22 carat gold rate')}${a('/24-carat-gold-rate/', '24 carat gold rate')}${a('/18-carat-gold-rate/', '18 carat gold rate')}${a('/silver-rate-today/', 'Silver rate today')}${a('/ibja-gold-rate/', 'IBJA gold rate')}</nav>
-<nav aria-labelledby="fb"><h2 id="fb">By weight</h2>${a('/1-gram-gold-rate/', '1 gram gold rate')}${a('/1-pavan-gold-rate/', '1 pavan gold rate')}${a('/10-gram-gold-rate/', '10 gram gold rate')}${a('/1-tola-gold-rate/', '1 tola gold rate')}${a('/gold-price-calculator/', 'Gold price calculator')}</nav>
-<nav aria-labelledby="fc"><h2 id="fc">Top cities</h2>${top}</nav>
+<div class="wrap foot-top">
+<div class="foot-brand"><a class="logo" href="${ctx.url('/')}" aria-label="${esc(ctx.site.name)}, home">${LOGO}${LOGO_TEXT}</a><p>Today's gold and silver rate for India and its cities, from the IBJA benchmark, updated every working day.</p></div>
+<nav aria-labelledby="fa"><h2 id="fa">Gold rates</h2>${a('/', 'Gold rate today')}${a('/22-carat-gold-rate/', '22 carat')}${a('/24-carat-gold-rate/', '24 carat')}${a('/18-carat-gold-rate/', '18 carat')}${a('/ibja-gold-rate/', 'IBJA rate')}${a('/silver-rate-today/', 'Silver rate')}</nav>
+<nav aria-labelledby="fb"><h2 id="fb">By weight</h2>${a('/1-gram-gold-rate/', '1 gram')}${a('/1-pavan-gold-rate/', '1 pavan')}${a('/10-gram-gold-rate/', '10 grams')}${a('/1-tola-gold-rate/', '1 tola')}${a('/gold-price-calculator/', 'Calculator')}</nav>
+<nav aria-labelledby="fc"><h2 id="fc">Cities</h2>${top}${a('/gold-rate/', 'All cities')}</nav>
 ${ctx.site.tamil ? `<nav aria-labelledby="fd"><h2 id="fd">Languages</h2>${a('/ta/', 'தமிழ்', 'ta')}${a('/ta/chennai/', 'சென்னை தங்கம் விலை', 'ta')}</nav>\n` : ''}<nav aria-labelledby="fe"><h2 id="fe">History</h2>${months}${a('/gold-rate-history/', 'All history')}</nav>
 </div>
 <div class="wrap foot-base">
@@ -147,11 +152,11 @@ export function page(ctx, o) {
 <link rel="canonical" href="${canonical}">
 <meta name="robots" content="${robots}">
 ${alts}
-<meta name="theme-color" content="#0E1317">
+<meta name="theme-color" content="#6E1A2A">
 <link rel="icon" href="${ctx.asset('favicon.svg')}" type="image/svg+xml">
 <link rel="apple-touch-icon" href="${ctx.asset('icons/icon-180.png')}">
 <link rel="manifest" href="${ctx.asset('manifest.webmanifest')}">
-<link rel="preload" href="${ctx.asset('assets/fonts/inter-var.woff2')}" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="${ctx.asset('assets/fonts/jakarta-latin.woff2')}" as="font" type="font/woff2" crossorigin>
 ${tamilFont}<link rel="stylesheet" href="${ctx.asset('assets/site.css')}">
 <meta property="og:type" content="${o.ogType || 'website'}">
 <meta property="og:site_name" content="${esc(ctx.site.name)}">

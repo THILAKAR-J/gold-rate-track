@@ -125,13 +125,13 @@ export function ibjaPage(ctx) {
   const R = ctx.rates, B = R.benchmarks, date = R.date, path = '/ibja-gold-rate/';
   const ib = B.ibja, prem = B.board ? B.board.g24 - ib.g24 : null;
   const t = tiles([
-    { main: true, k: 'IBJA', sub: '999 gold, 1 gram', price: inr(ib.g24), rows: [['Published', `${clock(ib.at)}`], ['10 grams', inr(ib.g24 * 10)]] },
+    { main: true, k: 'IBJA', sub: '999 gold, 1 gram', price: inr(ib.g24), rows: [['Session', R.carriedFrom ? 'Last rate' : R.session === 'AM' ? 'Morning' : 'Closing'], ['10 grams', inr(ib.g24 * 10)]] },
     B.mcx ? { k: 'MCX', sub: 'futures, 1 gram', price: inr(B.mcx.g24), rows: [['Live at', clock(B.mcx.at)], ['vs IBJA', sinr(B.mcx.g24 - ib.g24)]] } : null,
     B.board ? { k: 'Shops', sub: `${B.board.note} board, 24K`, price: inr(B.board.g24), rows: [['Announced', clock(B.board.at)], ['vs IBJA', sinr(prem)]] } : null,
     { k: '22K', sub: 'national, 1 gram', price: inr(R.national['22K'].g), rows: [['8 grams', inr(R.national['22K'].g * 8)], ['10 grams', inr(R.national['22K'].g * 10)]] }
   ].filter(Boolean).slice(0, 3));
-  const body = `<div class="tbl"><table class="t"><caption>24 carat gold per gram on ${longDate(date)}</caption><thead><tr><th scope="col">Rate</th><th scope="col">What it is</th><th scope="col" class="hl">Per gram</th><th scope="col">Time</th></tr></thead><tbody>
-<tr><th scope="row">${esc(ib.label)}</th><td style="text-align: left">${esc(ib.note)}</td><td class="hl num">${inr(ib.g24)}</td><td class="num">${clock(ib.at)}</td></tr>
+  const body = `<div class="tbl"><table class="t"><caption>24 carat gold per gram on ${longDate(date)}</caption><thead><tr><th scope="col">Rate</th><th scope="col">What it is</th><th scope="col" class="hl">Per gram</th><th scope="col">Session</th></tr></thead><tbody>
+<tr><th scope="row">${esc(ib.label)}</th><td style="text-align: left">${esc(ib.note)}</td><td class="hl num">${inr(ib.g24)}</td><td class="num">${R.carriedFrom ? 'Last rate' : R.session === 'AM' ? 'Morning' : 'Closing'}</td></tr>
 ${['mcx', 'board'].filter((x) => B[x]).map((x) => `<tr><th scope="row">${esc(B[x].label)}</th><td style="text-align: left">${esc(B[x].note)}</td><td class="hl num">${inr(B[x].g24)}</td><td class="num">${clock(B[x].at)}</td></tr>`).join('\n')}
 </tbody></table></div>`;
   const explain = card('e-h', 'What the IBJA rate is', '', `<div class="prose">
@@ -139,7 +139,7 @@ ${['mcx', 'board'].filter((x) => B[x]).map((x) => `<tr><th scope="row">${esc(B[x
 <p>The IBJA rate excludes GST and is for 999 gold. Shop boards are usually a little higher because they add local costs and margins.${prem === null ? '' : ` Today the shop board is ${inr(Math.abs(prem))} per gram ${prem >= 0 ? 'above' : 'below'} the IBJA rate.`}</p>
 </div>`);
   const faqs = [
-    { q: 'What is the IBJA gold rate today?', a: `${inr(ib.g24)} per gram for 999 gold, published at ${clock(ib.at)} on ${longDate(date)}, excluding GST.` },
+    { q: 'What is the IBJA gold rate today?', a: `${inr(ib.g24)} per gram for 999 gold on ${longDate(date)}, the IBJA ${R.session === 'AM' ? 'morning' : 'closing'} rate, excluding GST.` },
     { q: 'Why is my jeweller\'s rate different from IBJA?', a: 'Shops add transport, local association rates and their margin. So a shop\'s board is often a little higher than IBJA.' },
     { q: 'When is the IBJA rate published?', a: 'Around noon and again in the evening on business days. On holidays the last published rate stands.' }
   ];
@@ -147,7 +147,7 @@ ${['mcx', 'board'].filter((x) => B[x]).map((x) => `<tr><th scope="row">${esc(B[x
 ${hero({
     crumbsHtml: crumbs(ctx, [{ name: 'Home', path: '/' }, { name: 'IBJA gold rate' }]),
     h1: 'IBJA Gold Rate Today',
-    answer: `Today, <time datetime="${date}">${longDate(date)}</time>, the IBJA benchmark for 999 gold is <strong class="num">${inr(ib.g24)}</strong> per gram, published at ${clock(ib.at)} IST, excluding GST.`,
+    answer: `Today, <time datetime="${date}">${longDate(date)}</time>, the IBJA benchmark for 999 gold is <strong class="num">${inr(ib.g24)}</strong> per gram (${R.session === 'AM' ? 'morning' : 'closing'} rate), excluding GST.`,
     tilesHtml: t,
     stampHtml: stamp([`${live}IBJA ${R.session === 'AM' ? 'morning' : 'closing'} rate, updated <time datetime="${ib.at}">${clock(ib.at)} IST</time>`, 'Excludes GST'], sampleTag(ctx))
   })}

@@ -3,22 +3,28 @@ import { inr, sinr, esc, longDate, medDate, shortDate, clock } from '../lib/form
 import { page, crumbs, adSlot } from '../lib/layout.mjs';
 import {
   PURITY, TOLA, pctOf, arrow, chgCls, tiles, card, weightTable, cityTable, trendChart, trendStats, dailyTable,
-  faqCard, faqLd, quickLinks, railCity, popularLinks, railInstall, myCityBar, stamp, live, hero, twoCol
+  faqCard, faqLd, quickLinks, railCity, railLinks, popularLinks, railInstall, myCityBar, stamp, live, hero, twoCol, unitCards, cityCards, noteBox, ctaBox
 } from '../lib/parts.mjs';
 
-export function nationalTiles(ctx, { per = 'gram' } = {}) {
+export const HOME_TABS = [{ label: '1 gram', short: '/ gram', g: 1 }, { label: '1 pavan (8 g)', short: '/ 8 g', g: 8 }, { label: '10 grams', short: '/ 10 g', g: 10 }];
+
+export function nationalTiles(ctx, { per = 'gram', tabs = null, foot = '' } = {}) {
   const N = ctx.rates.national;
   return tiles(['22K', '24K', '18K'].map((k) => ({
     main: k === '22K',
     k,
-    sub: PURITY[k].note,
-    chg: `${arrow(N[k].chg)} ₹${Math.abs(N[k].chg)} · ${pctOf(N[k].g, N[k].chg)}`,
+    sub: k === '22K' ? PURITY[k].note : PURITY[k].mark,
+    chg: `${arrow(N[k].chg)} ₹${Math.abs(N[k].chg).toLocaleString('en-IN')}${k === '22K' ? ` · ${pctOf(N[k].g, N[k].chg)}` : ''}`,
+    chgG: N[k].chg,
     chgCls: chgCls(N[k].chg),
     price: inr(N[k].g),
-    small: `/ ${per}`,
+    g: N[k].g,
+    small: k === '22K' ? `/ ${per}` : '',
     rows: [['8 g<span class="hide-sm"> · 1 pavan</span>', inr(N[k].g * 8)], ['10 g', inr(N[k].g * 10)]]
-  })));
+  })), { tabs, foot });
 }
+
+export const sessionWord = (R) => (R.carriedFrom ? 'Last IBJA rate' : R.session === 'AM' ? 'IBJA morning rate' : 'IBJA closing rate');
 
 export function whyMoved(ctx) {
   const R = ctx.rates, h = R.history;
@@ -38,44 +44,63 @@ export function homePage(ctx) {
   const g22 = N['22K'].g, g24 = N['24K'].g;
   const month = ctx.months.at(-1);
 
-  const weights = card('w-h', 'Gold price by weight today', 'Per gram rate × weight, before GST and making charges.',
-    weightTable({
-      rates: { '22K': g22, '24K': g24, '18K': N['18K'].g },
-      caption: `Gold rate in India on ${longDate(date)}, in rupees`,
-      rows: [['1 gram', '', 1], ['8 grams', '1 pavan / sovereign', 8], ['10 grams', '', 10], ['1 tola', '11.66 grams', TOLA], ['100 grams', '', 100]]
-    }));
+  const weights = `<section class="sec" aria-labelledby="w-h"><h2 id="w-h" class="h2">Gold price by weight today</h2>
+${unitCards(ctx, [
+    { name: '1 gram', g: 1, path: '/1-gram-gold-rate/' },
+    { name: '1 pavan', note: '8 g', g: 8, path: '/1-pavan-gold-rate/' },
+    { name: '10 grams', g: 10, path: '/10-gram-gold-rate/' },
+    { name: '1 tola', note: '11.66 g', g: TOLA, path: '/1-tola-gold-rate/' }
+  ])}
+</section>`;
 
-  const pts24 = hist.map((x) => ({ date: x.date, v: x['24K'] }));
-  const net = pts24.at(-1).v - pts24[0].v;
-  const trend = card('t-h', `Gold rate in the last ${hist.length} days`,
-    `24K per gram ranged ${inr(Math.min(...pts24.map((p) => p.v)))} to ${inr(Math.max(...pts24.map((p) => p.v)))} and is ${net < 0 ? 'down' : 'up'} ${inr(Math.abs(net))} since ${shortDate(pts24[0].date)}.`,
-    `${trendChart(pts24, { label: '24K gold rate' })}
-${trendStats(pts24)}
-${dailyTable(hist, [{ head: '22K', v: (r) => r['22K'], hl: true }, { head: '24K', v: (r) => r['24K'] }], { caption: 'Gold rate in India per gram, newest first', limit: 5 })}
-<a class="more" href="${ctx.url(month.path)}">Full ${month.label} history →</a>`);
+  const pts = hist.map((x) => ({ date: x.date, v: x['24K'] }));
+  const p10 = pts.slice(-10);
+  const lo = Math.min(...pts.map((p) => p.v)), hi = Math.max(...pts.map((p) => p.v));
+  const net = pts.at(-1).v - pts[0].v;
+  const trend = card('t-h', `24K gold is ${net < 0 ? 'down' : 'up'} ${inr(Math.abs(net))} in ${pts.length} trading days`,
+    `Per gram, IBJA closing rate, ${shortDate(pts[0].date)} to ${longDate(pts.at(-1).date)}. High ${inr(hi)}, low ${inr(lo)}.`,
+    `<div data-range="30">${trendChart(pts, { label: '24K gold rate' })}</div>
+<div data-range="10" hidden>${trendChart(p10, { label: '24K gold rate' })}</div>`,
+    `<div class="rtabs" role="group" aria-label="Chart range"><button type="button" class="rtab" aria-pressed="false" data-rtab="10">10 days</button><button type="button" class="rtab on" aria-pressed="true" data-rtab="30">${pts.length} days</button></div>`);
+
+  const daily = card('d-h', 'Last 10 days, per gram', '',
+    `${dailyTable(hist, [{ head: '22K', v: (r) => r['22K'], hl: true }, { head: '24K', v: (r) => r['24K'] }], { caption: 'Gold rate in India per gram, IBJA closing rate, newest first', limit: 10 })}
+<a class="more" href="${ctx.url(month.path)}">Full gold rate history</a>`);
 
   const faqs = [
     { q: 'What is the gold rate today in India?', a: `On ${longDate(date)}, 22 carat gold is ${inr(g22)} per gram and 24 carat is ${inr(g24)} per gram, before 3% GST and making charges.` },
     { q: 'What is the 1 pavan gold rate today?', a: `One pavan (sovereign) is 8 grams: ${inr(g22 * 8)} for 22K and ${inr(g24 * 8)} for 24K today.` },
     { q: 'What is the 10 gram gold rate today?', a: `${inr(g22 * 10)} for 22K and ${inr(g24 * 10)} for 24K.` },
-    { q: 'Why is the shop price higher than this rate?', a: `Shops add 3% GST, a making charge and sometimes wastage. The <a href="${ctx.url('/gold-price-calculator/')}">gold price calculator</a> adds them for your piece.` },
-    { q: 'What is 916 gold?', a: '916 means 22 carat, which is 91.6% pure gold. It is the usual purity for jewellery.' },
-    { q: 'When does the gold rate change?', a: 'City boards usually update in the morning, and IBJA publishes its benchmark at noon and in the evening on business days. Every rate on this site shows its update time.' }
+    { q: "Why is my jeweller's rate higher?", a: `This is the IBJA wholesale benchmark. Shop boards add local costs, so they are usually 1 to 2% higher, and your bill adds 3% GST and a making charge. The <a href="${ctx.url('/gold-price-calculator/')}">gold price calculator</a> adds them for your piece.` },
+    { q: 'When is the rate updated?', a: 'After the IBJA morning and evening rates, Monday to Friday. On weekends and market holidays the last IBJA rate stays, and the page says which day it is from.' },
+    { q: 'What is the difference between 22K and 24K?', a: '24K (999) is pure gold, used for coins and bars. 22K (916) is 91.6% gold and is the usual purity for jewellery.' }
   ];
+
+  const rail = [
+    noteBox('Why shops quote a little more', 'Our rate is the IBJA wholesale benchmark. Shop boards add local costs, so they are usually 1 to 2% higher. Your bill also adds 3% GST and making charges.'),
+    ctaBox('What will my bill be?', "Add making charge and GST to today's rate.", ctx.url('/gold-price-calculator/'), 'Open the calculator'),
+    railLinks('Popular today', [
+      [ctx.url('/22-carat-gold-rate/'), '22 carat gold rate', inr(g22)],
+      [ctx.url('/18-carat-gold-rate/'), '18 carat gold rate', inr(N['18K'].g)],
+      [ctx.url('/ibja-gold-rate/'), 'IBJA gold rate', inr(R.benchmarks.ibja.g24)],
+      [ctx.url('/silver-rate-today/'), 'Silver rate today', inr(R.silverPerKg / 1000)]
+    ]),
+    adSlot(ctx, 'mr')
+  ].join('\n');
 
   const main = `<main id="main">
 ${hero({
     crumbsHtml: '',
     h1: 'Gold Rate Today in India',
-    answer: `Today, <time datetime="${date}">${longDate(date)}</time>, 22 carat gold is <strong class="num">${inr(g22)}</strong> per gram and 24 carat is <strong class="num">${inr(g24)}</strong> per gram, ${N['22K'].chg >= 0 ? 'up' : 'down'} ₹${Math.abs(N['22K'].chg)} and ₹${Math.abs(N['24K'].chg)} from yesterday.`,
-    tilesHtml: nationalTiles(ctx),
-    stampHtml: stamp([`${live}Updated <time datetime="${R.updatedAt}">${clock(R.updatedAt)} IST</time>`, 'IBJA benchmark, before 3% GST and making charges', `Silver ${inr(R.silverPerKg / 1000)} / gram`], R.sample ? 'Sample rates' : '')
+    answer: `22 carat gold is <strong class="num">${inr(g22)}</strong> per gram and 24 carat is <strong class="num">${inr(g24)}</strong>, ${N['22K'].chg === 0 && N['24K'].chg === 0 ? 'unchanged from yesterday' : `${N['22K'].chg >= 0 ? 'up' : 'down'} ₹${Math.abs(N['22K'].chg)} and ₹${Math.abs(N['24K'].chg)} from yesterday`}.`,
+    tilesHtml: nationalTiles(ctx, {
+      tabs: HOME_TABS,
+      foot: `<a class="tiles-foot" href="${ctx.url('/silver-rate-today/')}"><span>Silver</span><b class="num">${inr(R.silverPerKg / 1000)} / g · ${inr(R.silverPerKg)} / kg</b></a>`
+    }),
+    stampHtml: stamp([`${live}${sessionWord(R)} · <time datetime="${R.updatedAt}">${clock(R.updatedAt)} IST</time>`, 'Before 3% GST and making charges'], R.sample ? 'Sample rates' : '')
   })}
-${myCityBar()}
-${twoCol(
-    [weights, cityTable(ctx, { heading: 'Gold rate today in major cities', sub: Object.values(ctx.rates.cities).some((x) => x.local) ? "Each city's own board, with the unit its shops use." : "National IBJA rate, in the unit each city's shops use.", cities: ctx.cities }), adSlot(ctx, 'lb'), whyMoved(ctx), trend, quickLinks(ctx), faqCard('f-h', 'Gold rate questions', faqs)].join('\n'),
-    [railCity(ctx), adSlot(ctx, 'mr'), popularLinks(ctx), railInstall(), adSlot(ctx, 'sky')].join('\n')
-  )}
+<div class="wrap" style="padding-top: var(--sec)">${weights}</div>
+${twoCol([trend, cityCards(ctx, ctx.cities, { heading: 'Gold rate today in your city', sub: Object.values(R.cities).some((x) => x.local) ? '' : 'National IBJA rate, in the unit each city\'s shops use.' }), adSlot(ctx, 'lb'), daily, faqCard('f-h', 'Questions people ask', faqs)].join('\n'), rail)}
 </main>`;
 
   const title = `Gold Rate Today in India (${medDate(date)}): 22K ${inr(g22)}, 24K ${inr(g24)}`;

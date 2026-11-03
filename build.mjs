@@ -33,7 +33,9 @@ const hash = (p) => createHash('sha256').update(readFileSync(join(ROOT, 'public'
 const versions = Object.fromEntries(['assets/site.css', 'assets/app.js'].map((p) => [p, hash(p)]));
 const flatName = (p) => (p === '/' ? 'index.html' : p.endsWith('.html') ? p.slice(1) : p.replace(/^\/|\/$/g, '').replace(/\//g, '-') + '.html');
 
-import { setStampExtra } from './src/lib/parts.mjs';
+import { setStampExtra, setHeroDate } from './src/lib/parts.mjs';
+import { weekday as wdName, longDate as longD } from './src/lib/format.mjs';
+setHeroDate(`${wdName(rates.date)}, ${longD(rates.date)}`);
 setStampExtra(rates.carriedFrom
   ? `No IBJA rate today: last rate, ${new Date(rates.carriedFrom + 'T12:00:00Z').toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' })}`
   : '');
@@ -110,7 +112,7 @@ writeFileSync(join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\
 writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${ctx.abs('/sitemap.xml')}\n`);
 writeFileSync(join(OUT, 'manifest.webmanifest'), JSON.stringify({
   name: site.name, short_name: site.shortName, lang: 'en-IN', start_url: ctx.url('/'), scope: (FLAT ? './' : base + '/'),
-  display: 'standalone', background_color: '#F3F4F1', theme_color: '#0E1317',
+  display: 'standalone', background_color: '#FBF8F2', theme_color: '#6E1A2A',
   description: "Today's gold rate in India and your city.",
   icons: [192, 512].map((s) => ({ src: ctx.asset(`icons/icon-${s}.png`), sizes: `${s}x${s}`, type: 'image/png', purpose: 'any' }))
     .concat([{ src: ctx.asset('icons/icon-maskable-512.png'), sizes: '512x512', type: 'image/png', purpose: 'maskable' }])
@@ -133,5 +135,5 @@ function validate(r, cs) {
     for (const k of ['24K', '22K', '18K']) if (!(x[k] > 0)) fail(`${c.slug}.${k} missing`);
     for (const n of c.near) if (!cs.find((y) => y.slug === n)) fail(`${c.slug} lists unknown nearby city "${n}"`);
   }
-  if (!existsSync(join(ROOT, 'public/assets/fonts/inter-var.woff2'))) fail('font file missing');
+  if (!existsSync(join(ROOT, 'public/assets/fonts/jakarta-latin.woff2'))) fail('font file missing');
 }

@@ -12,17 +12,21 @@ export const pctOf = (g, chg) => ((Math.abs(chg) / (g - chg)) * 100).toFixed(2) 
 export const arrow = (c) => (c >= 0 ? '▲' : '▼');
 export const chgCls = (c, dark = true) => (dark ? (c >= 0 ? 'chg chg-up' : 'chg chg-down') : c >= 0 ? 'chg chg-up-l' : 'chg chg-down-l');
 
-/* ---------- Rate tiles (hero) ---------- */
-export function tiles(list) {
-  return `<div class="tiles">${list
+/* ---------- Rate card (hero) ---------- */
+// list: [{main, k, sub, chg, chgCls, price, small, rows, g}] · opts.tabs: [{label, g}] switches every tile with `g` (per-gram) to that weight.
+export function tiles(list, { tabs = null, foot = '' } = {}) {
+  const tabBar = tabs
+    ? `<div class="utabs" role="group" aria-label="Show the price for">${tabs.map((u, i) => `<button type="button" class="utab${i ? '' : ' on'}" aria-pressed="${i ? 'false' : 'true'}" data-utab="${u.g}" data-ulabel="${esc(u.short || u.label)}">${esc(u.label)}</button>`).join('')}</div>`
+    : '';
+  return `<div class="tiles"${tabs ? ' data-tabs' : ''}>${tabBar}${list
     .map(
       (t) => `<div class="tile${t.main ? ' main' : ''}">
-<div class="tile-top"><span class="tile-k">${t.k} <span>· ${t.sub}</span></span>${t.chg ? `<span class="${t.chgCls} num">${t.chg}</span>` : ''}</div>
-<p class="tile-p num">${t.price}${t.small ? `<small>${t.small}</small>` : ''}</p>
-<dl class="tile-rows num">${t.rows.map(([dt, dd]) => `<dt>${dt}</dt><dd>${dd}</dd>`).join('')}</dl>
+<div class="tile-top"><span class="tile-k">${t.k} <span>· ${t.sub}</span></span>${t.chg ? `<span class="${t.chgCls} num"${t.g ? ` data-chg="${t.chgG}"` : ''}>${t.chg}</span>` : ''}</div>
+<p class="tile-p num"${t.g ? ` data-g="${t.g}"` : ''}><span data-v>${t.price}</span>${t.small ? `<small data-u>${t.small}</small>` : ''}</p>
+${t.rows && t.rows.length ? `<dl class="tile-rows num">${t.rows.map(([dt, dd]) => `<dt>${dt}</dt><dd>${dd}</dd>`).join('')}</dl>` : ''}
 </div>`
     )
-    .join('\n')}</div>`;
+    .join('\n')}${foot}</div>`;
 }
 
 /* ---------- Card wrapper ---------- */
@@ -101,22 +105,23 @@ export function trendChart(points, { label, unitWord = 'per gram', endWord = 'To
   const py = (v) => ((v / 270) * 100).toFixed(1) + '%';
   const line = s.map((v, i) => (i ? 'L' : 'M') + cx(i).toFixed(1) + ' ' + cy(v).toFixed(1)).join(' ');
   const iHi = s.indexOf(hi), iLo = s.indexOf(lo), last = n - 1, mid = Math.floor(last / 2);
+  const edge = (i) => (i <= last * 0.15 ? ' ov-l' : i >= last * 0.85 ? ' ov-r' : '');
   const aria = `${label} ${unitWord} from ${dayMonth(points[0].date)} to ${longDate(points[last].date)}, ranging ${inr(lo)} to ${inr(hi)}, now ${inr(s[last])}`;
   return `<figure class="plot"><svg class="chart" viewBox="0 0 640 270" role="img" aria-label="${esc(aria)}">
-<line x1="0" x2="640" y1="${cy(hi).toFixed(1)}" y2="${cy(hi).toFixed(1)}" stroke="#E2E5E0" stroke-dasharray="4 4"/>
-<line x1="0" x2="640" y1="${cy(lo).toFixed(1)}" y2="${cy(lo).toFixed(1)}" stroke="#E2E5E0" stroke-dasharray="4 4"/>
-<path d="${line} L${cx(last).toFixed(1)} 232 L${cx(0).toFixed(1)} 232 Z" fill="#E8B64C" fill-opacity="0.18"/>
-<path d="${line}" fill="none" stroke="#9C6B12" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="${cx(iHi).toFixed(1)}" cy="${cy(hi).toFixed(1)}" r="5" fill="#FFFFFF" stroke="#9C6B12" stroke-width="2.5"/>
-<circle cx="${cx(iLo).toFixed(1)}" cy="${cy(lo).toFixed(1)}" r="5" fill="#FFFFFF" stroke="#9C6B12" stroke-width="2.5"/>
-<circle cx="${cx(last).toFixed(1)}" cy="${cy(s[last]).toFixed(1)}" r="7" fill="#12161A" stroke="#E8B64C" stroke-width="3"/>
-<line x1="0" x2="640" y1="232" y2="232" stroke="#DDE1DC"/>
+<line x1="0" x2="640" y1="${cy(hi).toFixed(1)}" y2="${cy(hi).toFixed(1)}" stroke="#EFE8DA" stroke-dasharray="4 4"/>
+<line x1="0" x2="640" y1="${cy(lo).toFixed(1)}" y2="${cy(lo).toFixed(1)}" stroke="#EFE8DA" stroke-dasharray="4 4"/>
+<path d="${line} L${cx(last).toFixed(1)} 232 L${cx(0).toFixed(1)} 232 Z" fill="#F6EBD3"/>
+<path d="${line}" fill="none" stroke="#6E1A2A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="${cx(iHi).toFixed(1)}" cy="${cy(hi).toFixed(1)}" r="5" fill="#FFFFFF" stroke="#6E1A2A" stroke-width="2.5"/>
+<circle cx="${cx(iLo).toFixed(1)}" cy="${cy(lo).toFixed(1)}" r="5" fill="#FFFFFF" stroke="#6E1A2A" stroke-width="2.5"/>
+<circle cx="${cx(last).toFixed(1)}" cy="${cy(s[last]).toFixed(1)}" r="7" fill="#6E1A2A" stroke="#FFFFFF" stroke-width="3"/>
+<line x1="0" x2="640" y1="232" y2="232" stroke="#E8E1D3"/>
 </svg>
 <span class="ov ov-x ov-x0" style="left: ${px(cx(0))}; top: 89%">${shortDate(points[0].date)}</span>
 ${mid > 0 && mid < last ? `<span class="ov ov-x" style="left: ${px(cx(mid))}; top: 89%">${shortDate(points[mid].date)}</span>` : ''}
 <span class="ov ov-x ov-x9" style="left: ${px(cx(last))}; top: 89%">${shortDate(points[last].date)}</span>
-<span class="ov" style="left: ${px(cx(iHi))}; top: ${py(cy(hi) - 10)}">High ${inr(hi)}</span>
-<span class="ov ov-x" style="left: ${px(cx(iLo))}; top: ${py(cy(lo) + 12)}">Low ${inr(lo)}</span>
+<span class="ov${edge(iHi)}" style="left: ${px(cx(iHi))}; top: ${py(cy(hi) - 10)}">High ${inr(hi)}</span>
+${iLo >= last - 1 || iLo === iHi ? '' : `<span class="ov ov-x${edge(iLo)}" style="left: ${px(cx(iLo))}; top: ${py(cy(lo) + 12)}">Low ${inr(lo)}</span>`}
 <span class="ov ov-end" style="left: ${px(cx(last) - 6)}; top: ${py(cy(s[last]) - 6)}">${endWord} ${inr(s[last])}</span>
 </figure>`;
 }
@@ -167,7 +172,7 @@ export const faqLd = (items) => ({
   '@type': 'FAQPage',
   mainEntity: items.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') } }))
 });
-export const faqCard = (id, heading, items) => `<section class="card" aria-labelledby="${id}"><h2 id="${id}" class="h2">${heading}</h2><div>${faqHtml(items)}</div></section>`;
+export const faqCard = (id, heading, items) => `<section class="sec" aria-labelledby="${id}"><h2 id="${id}" class="h2">${heading}</h2><div class="faqs">${faqHtml(items)}</div></section>`;
 
 /* ---------- Quick links to the other rate pages ---------- */
 export function quickLinks(ctx, exclude = '') {
@@ -224,14 +229,47 @@ export const live = '<span class="live" aria-hidden="true"></span>';
 export { sinr };
 
 /* ---------- Page frames ---------- */
-export const hero = ({ crumbsHtml, h1, answer, tilesHtml = '', stampHtml = '' }) =>
-  `<section class="hero" aria-labelledby="h1"><div class="wrap">
+let heroDate = '';
+export const setHeroDate = (s) => { heroDate = s || ''; };
+export const hero = ({ crumbsHtml, h1, answer, tilesHtml = '', stampHtml = '', eyebrow = heroDate }) =>
+  `<section class="hero${tilesHtml ? ' has-card' : ''}" aria-labelledby="h1"><div class="wrap">
 ${crumbsHtml}
+${eyebrow ? `<p class="eyebrow">${eyebrow}</p>` : ''}
 <h1 id="h1" class="h1">${h1}</h1>
 <p class="answer">${answer}</p>
 ${tilesHtml}
 ${stampHtml}
 </div></section>`;
+
+/* ---------- Home parts from the design ---------- */
+export function unitCards(ctx, units, { hl = '1 pavan' } = {}) {
+  const N = ctx.rates.national;
+  return `<div class="units">${units
+    .map((u) => `<a class="unit${u.name === hl ? ' hl' : ''}" href="${ctx.url(u.path)}"><span class="unit-k">${esc(u.name)}${u.note ? ` <span>· ${esc(u.note)}</span>` : ''}</span><span class="unit-p num">${inr(N['22K'].g * u.g)}</span><span class="unit-s">22K</span><span class="unit-p2 num">${inr(N['24K'].g * u.g)}</span><span class="unit-s">24K</span></a>`)
+    .join('')}</div>`;
+}
+export function cityCards(ctx, cities, { id = 'c-h', heading, sub = '', finder = true, more = true } = {}) {
+  const items = cities
+    .map((c) => {
+      const r = ctx.rates.cities[c.slug], lu = localUnit(c);
+      return `<a class="cc" href="${ctx.url(`/gold-rate/${c.slug}/`)}" data-city="${esc((c.name + ' ' + c.state).toLowerCase())}" data-region="${c.region}"><span class="cc-n"><b>${esc(c.name)}</b><span>22K, ${esc(lu.label === '10 g' ? '10 grams' : lu.label)}</span></span><span class="cc-p num">${inr(r['22K'] * lu.g)}</span></a>`;
+    })
+    .join('\n');
+  const chips = ['All', 'South', 'North', 'West', 'East']
+    .map((r) => `<button type="button" class="chip${r === 'All' ? ' on' : ''}" aria-pressed="${r === 'All'}" data-region-btn="${r}">${r}</button>`)
+    .join('');
+  return `<section class="sec" aria-labelledby="${id}"${finder ? ' data-finder' : ''}>
+<div class="sec-head"><h2 id="${id}" class="h2">${heading}</h2>${more ? `<a class="more" href="${ctx.url('/gold-rate/')}">All cities</a>` : ''}</div>
+${sub ? `<p class="sub">${sub}</p>` : ''}
+${finder ? `<div class="chips" role="group" aria-label="Region">${chips}</div>` : ''}
+<div class="cityc" data-items>
+${items}
+</div>
+${finder ? `<p class="hint" data-empty hidden>No city in this region yet.</p>` : ''}
+</section>`;
+}
+export const noteBox = (heading, text) => `<div class="box note"><h2>${heading}</h2><p>${text}</p></div>`;
+export const ctaBox = (heading, text, href, label) => `<div class="box"><h2>${heading}</h2><p>${text}</p><a class="btn btn-dark btn-block" href="${href}">${label}</a></div>`;
 
 export const twoCol = (col, rail, railLabel = 'More rates') =>
   `<div class="wrap layout"><div class="col">

@@ -38,7 +38,7 @@
   /* ---------- City table filter (region chips + search) ---------- */
   $$('[data-finder]').forEach(function (box) {
     var region = 'All', q = '';
-    var rows = $$('tbody tr', box), count = $('[data-count]', box), empty = $('[data-empty]', box), input = $('[data-q]', box);
+    var rows = $$('tbody tr[data-city], [data-items] [data-city]', box), count = $('[data-count]', box), empty = $('[data-empty]', box), input = $('[data-q]', box);
     function apply() {
       var n = 0, needle = q.trim().toLowerCase();
       rows.forEach(function (r) {
@@ -50,6 +50,29 @@
     }
     pickGroup($$('[data-region-btn]', box), 'data-region-btn', function (v) { region = v; apply(); });
     if (input) input.addEventListener('input', function () { q = input.value; apply(); });
+    // Header search lands here as ?q=chennai
+    var qs = (location.search.match(/[?&]q=([^&]*)/) || [])[1];
+    if (input && qs) { try { input.value = decodeURIComponent(qs.replace(/\+/g, ' ')); } catch (e) { input.value = qs; } q = input.value; apply(); }
+  });
+
+  /* ---------- Rate card: 1 gram / 1 pavan / 10 grams ---------- */
+  $$('.tiles[data-tabs]').forEach(function (card) {
+    var cells = $$('[data-g]', card), chgs = $$('[data-chg]', card);
+    pickGroup($$('[data-utab]', card), 'data-utab', function (v, b) {
+      var w = Number(v), unit = b.getAttribute('data-ulabel');
+      cells.forEach(function (c) { var g = Number(c.getAttribute('data-g')); $('[data-v]', c).textContent = inr(g * w); var u = $('[data-u]', c); if (u) u.textContent = unit; });
+      chgs.forEach(function (c) {
+        var d = Number(c.getAttribute('data-chg')) * w, rest = c.textContent.split('·')[1];
+        c.textContent = (d >= 0 ? '▲' : '▼') + ' ₹' + Math.abs(d).toLocaleString('en-IN') + (rest ? ' ·' + rest : '');
+      });
+    });
+  });
+
+  /* ---------- Chart range: 10 / 30 days ---------- */
+  var rtabs = $$('[data-rtab]');
+  if (rtabs.length) pickGroup(rtabs, 'data-rtab', function (v, b) {
+    var box = b.closest('.card');
+    $$('[data-range]', box).forEach(function (r) { r.hidden = r.getAttribute('data-range') !== v; });
   });
 
   /* ---------- Your city: saved on this device, shown first next time ---------- */

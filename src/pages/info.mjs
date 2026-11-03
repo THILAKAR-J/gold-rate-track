@@ -9,7 +9,7 @@ const ph = (s) => `<span class="ph">${esc(s)}</span>`;
 function infoPage(ctx, { path, name, h1, lead, body, title, description, pageId }) {
   const crumbList = [{ name: 'Home', path: '/' }, { name }];
   const main = `<main id="main">
-${hero({ crumbsHtml: crumbs(ctx, crumbList), h1, answer: lead })}
+${hero({ crumbsHtml: crumbs(ctx, crumbList), h1, answer: lead, eyebrow: '' })}
 <div class="wrap" style="padding-top: 32px; padding-bottom: 32px">
 <article class="card"><div class="prose">
 ${body}
@@ -116,7 +116,7 @@ export function notFoundPage(ctx) {
 <section class="hero" aria-labelledby="h1"><div class="wrap nf">
 <h1 id="h1" class="h1">We couldn't find that page</h1>
 <p class="answer">The link may be old, or the page may have moved. Today's rates are one tap away.</p>
-<div style="display: flex; gap: 8px; flex-wrap: wrap"><a class="btn btn-gold" href="${ctx.url('/')}">Gold rate today</a><a class="btn btn-line" href="${ctx.url('/gold-rate/')}">Find your city</a></div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 28px"><a class="btn btn-gold" href="${ctx.url('/')}">Gold rate today</a><a class="btn btn-line" href="${ctx.url('/gold-rate/')}">Find your city</a></div>
 </div></section>
 </main>`;
   return { path: '/404.html', noindex: true, html: page(ctx, { path: '/404.html', title: `Page not found | ${ctx.site.name}`, description: 'This page does not exist or has moved. See today\'s gold rate in India, or find the gold rate in your city.', active: '', pageId: 'nf', main, noindex: true }) };

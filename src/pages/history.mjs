@@ -1,7 +1,7 @@
 // History: hub (/gold-rate-history/) and one page per month with data.
 import { inr, longDate, medDate, shortDate, dayMonth, weekday } from '../lib/format.mjs';
 import { crumbs, adSlot } from '../lib/layout.mjs';
-import { tiles, card, trendChart, trendStats, dailyTable, railLinks, railInstall, stamp, hero, twoCol, quickLinks } from '../lib/parts.mjs';
+import { tiles, card, trendChart, trendStats, dailyTable, railLinks, railInstall, popularLinks, stamp, hero, twoCol, quickLinks } from '../lib/parts.mjs';
 import { pageOut } from './rates.mjs';
 
 const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
@@ -90,7 +90,7 @@ ${hero({
     h1: 'Gold Rate History in India',
     answer: `Daily 22K and 24K gold rates in India, month by month. The latest month is <a class="on-dark" href="${ctx.url(latest.path)}">${latest.label}</a>.`
   })}
-${twoCol([tbl, adSlot(ctx, 'lb'), quickLinks(ctx)].join('\n'), [railInstall(), adSlot(ctx, 'mr')].join('\n'), 'More history')}
+${twoCol([tbl, adSlot(ctx, 'lb'), quickLinks(ctx)].join('\n'), [popularLinks(ctx), adSlot(ctx, 'mr')].join('\n'), 'More rates')}
 </main>`;
   const title = 'Gold Rate History in India: Daily and Monthly 22K and 24K Rates';
   const description = 'Gold rate history in India with daily 22K and 24K rates per gram, monthly averages, highs and lows. Updated every day with the latest rate.';
