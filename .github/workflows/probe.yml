@@ -1,0 +1,16 @@
+name: probe
+on:
+  push:
+    branches: [probe]
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          curl -sSL -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36" https://ibjarates.com/ -o ibja.html -w "%{http_code} %{size_download}\n" || true
+          ls -la
+          git config user.name probe; git config user.email probe@users.noreply.github.com
+          git add ibja.html; git commit -m "probe html" && git push
