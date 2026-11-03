@@ -1,4 +1,4 @@
-/* Gold Rate Track: progressive enhancement. Every rate is already in the HTML; this file only adds interaction. */
+/* Daily Gold Rate India: progressive enhancement. Every rate is already in the HTML; this file only adds interaction. */
 (function () {
   'use strict';
   var $ = function (s, r) { return (r || document).querySelector(s); };

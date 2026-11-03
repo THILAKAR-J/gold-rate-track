@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Static site build: data/*.json + src/ templates -> dist/ (or dist-flat/ with --flat). No dependencies.
 //   node build.mjs                                   local build for http://localhost:4173
-//   SITE_URL=https://goldratetrack.com node build.mjs  production build on the real domain
+//   SITE_URL=https://dailygoldrateindia.com node build.mjs  production build on the real domain
 //   SITE_URL=https://user.github.io/repo BASE_PATH=/repo node build.mjs   GitHub Pages review build
 import { readFileSync, writeFileSync, mkdirSync, rmSync, cpSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -27,6 +27,8 @@ validate(rates, cities);
 
 const base = FLAT ? '' : (process.env.BASE_PATH || '').replace(/\/$/, '');
 const siteUrl = (process.env.SITE_URL || 'http://localhost:4173').replace(/\/$/, '');
+// Index only the real domain with real rates, unless SITE_INDEX forces it (true/false).
+site.index = site.indexSetting === 'true' || (site.indexSetting === 'auto' && siteUrl === site.url && !rates.sample);
 const hash = (p) => createHash('sha256').update(readFileSync(join(ROOT, 'public', p))).digest('hex').slice(0, 10);
 const versions = Object.fromEntries(['assets/site.css', 'assets/app.js'].map((p) => [p, hash(p)]));
 const flatName = (p) => (p === '/' ? 'index.html' : p.endsWith('.html') ? p.slice(1) : p.replace(/^\/|\/$/g, '').replace(/\//g, '-') + '.html');
@@ -118,7 +120,7 @@ function validate(r, cs) {
   const fail = (m) => { console.error('data error: ' + m); process.exit(1); };
   for (const k of ['24K', '22K', '18K']) if (!(r.national?.[k]?.g > 0)) fail(`national.${k}.g missing`);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(r.date)) fail('date must be YYYY-MM-DD');
-  if (!Array.isArray(r.history) || r.history.length < 3) fail('history needs at least 3 days');
+  if (!Array.isArray(r.history) || r.history.length < 2) fail('history needs at least 2 days (today and yesterday)');
   const last = r.history.at(-1);
   if (last.date !== r.date) fail(`last history day (${last.date}) must equal date (${r.date})`);
   if (last['24K'] !== r.national['24K'].g || last['22K'] !== r.national['22K'].g) fail('last history day must match national rates');

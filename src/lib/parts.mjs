@@ -113,7 +113,7 @@ export function trendChart(points, { label, unitWord = 'per gram', endWord = 'To
 <line x1="0" x2="640" y1="232" y2="232" stroke="#DDE1DC"/>
 </svg>
 <span class="ov ov-x ov-x0" style="left: ${px(cx(0))}; top: 89%">${shortDate(points[0].date)}</span>
-<span class="ov ov-x" style="left: ${px(cx(mid))}; top: 89%">${shortDate(points[mid].date)}</span>
+${mid > 0 && mid < last ? `<span class="ov ov-x" style="left: ${px(cx(mid))}; top: 89%">${shortDate(points[mid].date)}</span>` : ''}
 <span class="ov ov-x ov-x9" style="left: ${px(cx(last))}; top: 89%">${shortDate(points[last].date)}</span>
 <span class="ov" style="left: ${px(cx(iHi))}; top: ${py(cy(hi) - 10)}">High ${inr(hi)}</span>
 <span class="ov ov-x" style="left: ${px(cx(iLo))}; top: ${py(cy(lo) + 12)}">Low ${inr(lo)}</span>
@@ -198,7 +198,7 @@ export function railLinks(heading, links) {
     .join('')}</ul></div>`;
 }
 export const railInstall = () =>
-  `<div class="box install" data-install hidden><svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" style="flex: none"><rect x="10" y="3" width="20" height="34" rx="4" fill="none" stroke="#12161A" stroke-width="2"/><rect x="15" y="12" width="10" height="10" rx="3" fill="#E8B64C"/><path d="M17 31h6" stroke="#12161A" stroke-width="2" stroke-linecap="round"/></svg><div style="display: flex; flex-direction: column; gap: 8px"><p><b>Check daily?</b> Add Gold Rate Track to your home screen for one-tap rates.</p><button type="button" class="btn btn-dark" data-install-btn>Add to home screen</button></div></div>`;
+  `<div class="box install" data-install hidden><svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" style="flex: none"><rect x="10" y="3" width="20" height="34" rx="4" fill="none" stroke="#12161A" stroke-width="2"/><rect x="15" y="12" width="10" height="10" rx="3" fill="#E8B64C"/><path d="M17 31h6" stroke="#12161A" stroke-width="2" stroke-linecap="round"/></svg><div style="display: flex; flex-direction: column; gap: 8px"><p><b>Check daily?</b> Add Daily Gold Rate India to your home screen for one-tap rates.</p><button type="button" class="btn btn-dark" data-install-btn>Add to home screen</button></div></div>`;
 
 export function popularLinks(ctx) {
   const N = ctx.rates.national, C = ctx.rates.cities;

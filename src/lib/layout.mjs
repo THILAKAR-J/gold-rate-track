@@ -59,7 +59,7 @@ function header(ctx, o) {
     ? `<a class="lang-btn" href="${ctx.url(o.altPath || '/')}" lang="en" hreflang="en">${icon('globe', 16)}English</a>`
     : `<a class="lang-btn" href="${ctx.url(o.altPath || '/ta/')}" lang="ta" hreflang="ta">${icon('globe', 16)}தமிழ்</a>`;
   return `<header class="hdr"><div class="wrap">
-<a class="logo" href="${ctx.url(o.lang === 'ta' ? '/ta/' : '/')}" aria-label="${esc(ctx.site.name)}, ${o.lang === 'ta' ? 'முகப்பு' : 'home'}">${LOGO}<span>GoldRate<em>Track</em></span></a>
+<a class="logo" href="${ctx.url(o.lang === 'ta' ? '/ta/' : '/')}" aria-label="${esc(ctx.site.name)}, ${o.lang === 'ta' ? 'முகப்பு' : 'home'}">${LOGO}<span>DailyGoldRate<em>India</em></span></a>
 <nav id="site-nav" class="nav" aria-label="${o.lang === 'ta' ? 'முதன்மை' : 'Main'}">${nav}</nav>
 ${other}
 <button type="button" class="menu-btn" aria-controls="site-nav" aria-expanded="false" aria-label="${o.lang === 'ta' ? 'பட்டியல்' : 'Menu'}" data-menu><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12161A" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>

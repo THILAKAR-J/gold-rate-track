@@ -30,7 +30,7 @@ export function aboutPage(ctx) {
     body: `<h2>What we do</h2>
 <p>We publish the gold rate for India and for each city we cover, every day, per gram and in the local unit: the sovereign (pavan) in Tamil Nadu and Kerala, 10 grams and the tola elsewhere. Every rate shows when it was updated.</p>
 <h2>Where the rates come from</h2>
-<p>National rates follow the IBJA benchmark. City rates come from each city's jewellers' association board. Our data provider is ${ph('[name of licensed rate provider]')}. A person checks the morning rates against the source before 10 AM.</p>
+<p>National rates follow the IBJA benchmark. Where we have a city's own published rate, the city page shows it; where we do not yet, the city page shows the national rate and says so. A person enters and checks the rates every working day.</p>
 <p>Rates are before 3% GST and making charges, so a shop's bill will be higher. The <a href="${ctx.url('/gold-price-calculator/')}">gold price calculator</a> adds those for your piece.</p>
 <h2>How we write</h2>
 <ul><li>We explain rates; we do not tell anyone when to buy or sell.</li><li>Sponsored content and ads are always labelled.</li><li>If we get a rate wrong, we correct it and note the correction on the page.</li></ul>
@@ -45,7 +45,7 @@ export function contactPage(ctx) {
     path: '/contact/', name: 'Contact', pageId: 'contact',
     h1: 'Contact us',
     lead: `Report a wrong rate, ask for your city, or ask a question. Email ${esc(ctx.site.email)}.`,
-    title: `Contact ${ctx.site.name}: Report a Wrong Rate or Ask for Your City`,
+    title: 'Contact Us: Report a Wrong Gold Rate or Ask for Your City',
     description: `Contact ${ctx.site.name} to report a wrong gold rate, ask us to add your city or raise a concern. We reply within two working days.`,
     body: `<h2>Email</h2>
 <p>${mail} (${ph('set up this mailbox before launch')})</p>
@@ -66,7 +66,7 @@ export function privacyPage(ctx) {
     h1: 'Privacy Policy',
     lead: `You can use every page without telling us who you are. Updated ${longDate(ctx.buildDate)}. Draft for legal review.`,
     title: `Privacy Policy | ${ctx.site.name}`,
-    description: `How ${ctx.site.name} handles data: no sign-up, your saved city stays on your device, and cookies for analytics or ads only where the law allows. Your rights under the DPDP Act.`,
+    description: `How ${ctx.site.name} handles data: no sign-up, your saved city stays on your device, and analytics or ad cookies only where the law allows. Your DPDP rights.`,
     body: `<h2>Who we are</h2>
 <p>${esc(ctx.site.name)} (${esc(ctx.site.domain)}) is run by ${ph(ctx.site.legalName)}, ${ph('[postal address]')}. Contact: ${mail}.</p>
 <h2>What we collect</h2>

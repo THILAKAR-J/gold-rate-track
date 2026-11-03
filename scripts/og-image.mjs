@@ -22,7 +22,7 @@ h1 b{color:#E8B64C}
 <svg class="pat" viewBox="0 0 1200 630"><defs><pattern id="j" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M24 4 L44 24 L24 44 L4 24 Z" fill="none" stroke="#E8B64C" stroke-opacity=".09"/></pattern><radialGradient id="g" cx="25%" cy="35%" r="65%"><stop offset="0" stop-color="#E8B64C" stop-opacity=".16"/><stop offset="1" stop-color="#E8B64C" stop-opacity="0"/></radialGradient></defs><rect width="1200" height="630" fill="url(#j)"/><rect width="1200" height="630" fill="url(#g)"/></svg>
 <div class="bars"><i style="height:90px;opacity:.35"></i><i style="height:130px;opacity:.5"></i><i style="height:110px;opacity:.65"></i><i style="height:170px;opacity:.8"></i><i style="height:210px"></i></div>
 <div class="in">
-<div class="logo"><svg width="64" height="64" viewBox="0 0 34 34"><rect x="1" y="1" width="32" height="32" rx="9" fill="#161D23" stroke="#3A434B"/><path d="M9 23 L12 12 H22 L25 23 Z" fill="#E8B64C"/><path d="M6 27 H28" stroke="#E8B64C" stroke-width="1.6" stroke-linecap="round"/></svg><span>GoldRate<span style="color:#E8B64C">Track</span></span></div>
+<div class="logo"><svg width="64" height="64" viewBox="0 0 34 34"><rect x="1" y="1" width="32" height="32" rx="9" fill="#161D23" stroke="#3A434B"/><path d="M9 23 L12 12 H22 L25 23 Z" fill="#E8B64C"/><path d="M6 27 H28" stroke="#E8B64C" stroke-width="1.6" stroke-linecap="round"/></svg><span>DailyGoldRate<span style="color:#E8B64C">India</span></span></div>
 <h1>Gold rate <b>today</b>, city by city.</h1>
 <div class="row"><span class="chip on">22K</span><span class="chip">24K</span><span class="chip">Pavan · Tola · Grams</span><span class="chip">Calculator</span></div>
 </div></body></html>`;

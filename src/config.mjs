@@ -1,13 +1,14 @@
 // Site-wide settings. Values in [brackets] must be replaced before launch.
 export const site = {
-  name: 'Gold Rate Track',
-  shortName: 'GoldRateTrack',
-  domain: 'goldratetrack.com',
+  name: 'Daily Gold Rate India',
+  shortName: 'Gold Rate',
+  domain: 'dailygoldrateindia.com',
+  // The real address. Search indexing turns on only when the site is built for this URL with real (non-sample) rates.
+  url: 'https://dailygoldrateindia.com',
   legalName: '[Company or owner legal name]',
-  email: 'contact@goldratetrack.com',
-  // Search engines are told not to index the site until this is true.
-  // Turn it on (SITE_INDEX=true) only on the real domain, with real rates and legal details in place.
-  index: process.env.SITE_INDEX === 'true',
+  email: 'contact@dailygoldrateindia.com',
+  // Indexing: automatic on the real domain once rates are real. SITE_INDEX=false forces noindex; SITE_INDEX=true forces it on.
+  indexSetting: process.env.SITE_INDEX || 'auto',
   // Ads stay off at launch (plan: switch on after AdSense approval, week 3 to 4).
   // ADSENSE_CLIENT=ca-pub-... turns on the reserved slots.
   adsenseClient: process.env.ADSENSE_CLIENT || ''

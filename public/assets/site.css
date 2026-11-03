@@ -1,4 +1,4 @@
-/* Gold Rate Track: one stylesheet for every page. 8 px spacing, Inter, rate-board palette. */
+/* Daily Gold Rate India: one stylesheet for every page. 8 px spacing, Inter, rate-board palette. */
 @font-face{font-family:'Inter';src:url(fonts/inter-var.woff2) format('woff2');font-weight:400 800;font-style:normal;font-display:swap}
 :root{
   --ink:#12161A;--body:#2A333B;--muted:#4A5560;--line:#DDE1DC;--line2:#E8EBE6;

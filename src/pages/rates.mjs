@@ -123,20 +123,20 @@ ${twoCol([card('w-h', 'Silver price by weight today', 'Per gram rate × weight.'
 /* ---------- IBJA ---------- */
 export function ibjaPage(ctx) {
   const R = ctx.rates, B = R.benchmarks, date = R.date, path = '/ibja-gold-rate/';
-  const ib = B.ibja, prem = B.board.g24 - ib.g24;
+  const ib = B.ibja, prem = B.board ? B.board.g24 - ib.g24 : null;
   const t = tiles([
     { main: true, k: 'IBJA', sub: '999 gold, 1 gram', price: inr(ib.g24), rows: [['Published', `${clock(ib.at)}`], ['10 grams', inr(ib.g24 * 10)]] },
-    { k: 'MCX', sub: 'futures, 1 gram', price: inr(B.mcx.g24), rows: [['Live at', clock(B.mcx.at)], ['vs IBJA', sinr(B.mcx.g24 - ib.g24)]] },
-    { k: 'Shops', sub: `${B.board.note} board, 24K`, price: inr(B.board.g24), rows: [['Announced', clock(B.board.at)], ['vs IBJA', sinr(prem)]] }
-  ]);
+    B.mcx ? { k: 'MCX', sub: 'futures, 1 gram', price: inr(B.mcx.g24), rows: [['Live at', clock(B.mcx.at)], ['vs IBJA', sinr(B.mcx.g24 - ib.g24)]] } : null,
+    B.board ? { k: 'Shops', sub: `${B.board.note} board, 24K`, price: inr(B.board.g24), rows: [['Announced', clock(B.board.at)], ['vs IBJA', sinr(prem)]] } : null,
+    { k: '22K', sub: 'national, 1 gram', price: inr(R.national['22K'].g), rows: [['8 grams', inr(R.national['22K'].g * 8)], ['10 grams', inr(R.national['22K'].g * 10)]] }
+  ].filter(Boolean).slice(0, 3));
   const body = `<div class="tbl"><table class="t"><caption>24 carat gold per gram on ${longDate(date)}</caption><thead><tr><th scope="col">Rate</th><th scope="col">What it is</th><th scope="col" class="hl">Per gram</th><th scope="col">Time</th></tr></thead><tbody>
 <tr><th scope="row">${esc(ib.label)}</th><td style="text-align: left">${esc(ib.note)}</td><td class="hl num">${inr(ib.g24)}</td><td class="num">${clock(ib.at)}</td></tr>
-<tr><th scope="row">${esc(B.mcx.label)}</th><td style="text-align: left">${esc(B.mcx.note)}</td><td class="hl num">${inr(B.mcx.g24)}</td><td class="num">${clock(B.mcx.at)}</td></tr>
-<tr><th scope="row">${esc(B.board.label)}</th><td style="text-align: left">${esc(B.board.note)}</td><td class="hl num">${inr(B.board.g24)}</td><td class="num">${clock(B.board.at)}</td></tr>
+${['mcx', 'board'].filter((x) => B[x]).map((x) => `<tr><th scope="row">${esc(B[x].label)}</th><td style="text-align: left">${esc(B[x].note)}</td><td class="hl num">${inr(B[x].g24)}</td><td class="num">${clock(B[x].at)}</td></tr>`).join('\n')}
 </tbody></table></div>`;
   const explain = card('e-h', 'What the IBJA rate is', '', `<div class="prose">
 <p>The India Bullion and Jewellers Association (IBJA) publishes a benchmark gold rate on business days, once around noon and again in the evening. Banks, jewellers and gold loan companies use it as a reference.</p>
-<p>The IBJA rate excludes GST and is for 999 gold. Shop boards are usually a little higher because they add local costs and margins. Today the shop board is ${inr(Math.abs(prem))} per gram ${prem >= 0 ? 'above' : 'below'} the IBJA rate.</p>
+<p>The IBJA rate excludes GST and is for 999 gold. Shop boards are usually a little higher because they add local costs and margins.${prem === null ? '' : ` Today the shop board is ${inr(Math.abs(prem))} per gram ${prem >= 0 ? 'above' : 'below'} the IBJA rate.`}</p>
 </div>`);
   const faqs = [
     { q: 'What is the IBJA gold rate today?', a: `${inr(ib.g24)} per gram for 999 gold, published at ${clock(ib.at)} on ${longDate(date)}, excluding GST.` },
@@ -152,11 +152,11 @@ ${hero({
     stampHtml: stamp([`${live}IBJA published <time datetime="${ib.at}">${clock(ib.at)} IST</time>`, 'Excludes GST'], sampleTag(ctx))
   })}
 ${myCityBar()}
-${twoCol([card('b-h', 'IBJA, MCX and shop rates side by side', '24 carat, per gram.', body), explain, adSlot(ctx, 'lb'), quickLinks(ctx, path), faqCard('f-h', 'IBJA rate questions', faqs)].join('\n'),
+${twoCol([card('b-h', B.mcx || B.board ? 'IBJA, MCX and shop rates side by side' : 'IBJA benchmark today', '24 carat, per gram.', body), explain, adSlot(ctx, 'lb'), quickLinks(ctx, path), faqCard('f-h', 'IBJA rate questions', faqs)].join('\n'),
     [popularLinks(ctx), adSlot(ctx, 'mr'), railInstall()].join('\n'))}
 </main>`;
   const title = `IBJA Gold Rate Today (${medDate(date)}): 999 Gold ${inr(ib.g24)} per Gram`;
-  const description = `IBJA gold rate today: ${inr(ib.g24)} per gram for 999 gold (${medDate(date)}, ${clock(ib.at)}), with MCX and the jewellers' board rate side by side.`;
+  const description = `IBJA gold rate today: ${inr(ib.g24)} per gram for 999 gold (${medDate(date)}, ${clock(ib.at)}). What the IBJA benchmark is and why shop rates differ.`;
   return pageOut(ctx, { path, title, description, active: '', main, faqs, crumbsList: [{ name: 'Home', path: '/' }, { name: 'IBJA gold rate' }] });
 }
 
@@ -204,7 +204,7 @@ ${twoCol([cities, adSlot(ctx, 'lb'), hist, quickLinks(ctx, path), faqCard('f-h',
     [railLinks('Other weights', UNITS.filter((x) => x !== u).map((x) => [ctx.url(`/${x.slug}/`), `${x.name} gold rate`, inr(N['22K'].g * x.g)])), adSlot(ctx, 'mr'), popularLinks(ctx), railInstall()].join('\n'))}
 </main>`;
   const title = `${u.title} Gold Rate Today (${medDate(date)}): 22K ${inr(N['22K'].g * u.g)}`;
-  const description = `${u.name}${u.also ? ` (${u.also})` : ''} gold rate today in India: 22K ${inr(N['22K'].g * u.g)}, 24K ${inr(N['24K'].g * u.g)} and 18K ${inr(N['18K'].g * u.g)} (${medDate(date)}). City rates and 10-day history.`;
+  const description = `${u.name}${u.also ? ` (${u.also})` : ''} gold rate today in India: 22K ${inr(N['22K'].g * u.g)}, 24K ${inr(N['24K'].g * u.g)} and 18K ${inr(N['18K'].g * u.g)} (${medDate(date)}). City rates and daily price history.`;
   return pageOut(ctx, { path, title, description, active: '', main, faqs, crumbsList: [{ name: 'Home', path: '/' }, { name: `${u.name} gold rate` }] });
 }
 

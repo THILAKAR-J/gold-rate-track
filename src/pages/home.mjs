@@ -79,7 +79,7 @@ ${twoCol(
 </main>`;
 
   const title = `Gold Rate Today in India (${medDate(date)}): 22K ${inr(g22)}, 24K ${inr(g24)}`;
-  const description = `Today's gold rate in India: 22 carat ${inr(g22)} and 24 carat ${inr(g24)} per gram (${medDate(date)}). City rates, 1 pavan and 10 gram prices, and 10-day history.`;
+  const description = `Today's gold rate in India: 22 carat ${inr(g22)} and 24 carat ${inr(g24)} per gram (${medDate(date)}). City rates, 1 pavan and 10 gram prices, and daily price history.`;
   return {
     path: '/',
     lastmod: R.updatedAt,

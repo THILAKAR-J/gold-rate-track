@@ -2,7 +2,7 @@
   "name": "gold-rate-tracker",
   "version": "1.0.0",
   "private": true,
-  "description": "Gold Rate Track: gold rate today in India. Static site generated from data/rates.json.",
+  "description": "Daily Gold Rate India: gold rate today in India. Static site generated from data/rates.json.",
   "type": "module",
   "engines": {
     "node": ">=20"

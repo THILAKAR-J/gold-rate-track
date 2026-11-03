@@ -82,7 +82,9 @@ ${hero({
     h1: `Gold Rate Today in ${esc(c.name)}`,
     answer: `Today, <time datetime="${date}">${longDate(date)}</time>, ${sov ? `1 ${uw} (8 g)` : '10 grams'} of 22 carat gold in ${esc(c.name)} is <strong class="num">${inr(r['22K'] * lu.g)}</strong> and 1 gram is <strong class="num">${inr(r['22K'])}</strong>, ${r.chg22 >= 0 ? 'up' : 'down'} ₹${Math.abs(r.chg22 * lu.g).toLocaleString('en-IN')} per ${sov ? uw : '10 grams'} from yesterday. ${vsIndia}`,
     tilesHtml: t,
-    stampHtml: stamp([`${live}${esc(c.name)} board <time datetime="${r.at}">${clock(r.at)} IST</time>`, `Source: <span class="ph">${esc(c.source)}</span>`, 'Before 3% GST and making charges'], ctx.rates.sample ? 'Sample rates' : '')
+    stampHtml: stamp(r.local === false
+      ? [`${live}Updated <time datetime="${r.at}">${clock(r.at)} IST</time>`, `National rate: ${esc(c.name)}'s local board rate is not yet available`, 'Before 3% GST and making charges']
+      : [`${live}${esc(c.name)} board <time datetime="${r.at}">${clock(r.at)} IST</time>`, (/^\[/.test(c.source) ? `Local ${esc(c.name)} rate` : `Source: ${esc(c.source)}`), 'Before 3% GST and making charges'], ctx.rates.sample ? 'Sample rates' : '')
   })}
 ${myCityBar()}
 ${twoCol([weights, planner, adSlot(ctx, 'lb'), nearby, quickLinks(ctx), faqCard('f-h', `${esc(c.name)} gold rate questions`, faqs)].join('\n'),
