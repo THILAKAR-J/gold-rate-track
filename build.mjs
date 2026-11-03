@@ -77,7 +77,7 @@ const pages = [
   ...ctx.months.map((m, i) => monthPage(ctx, m, i)),
   calculatorPage(ctx),
   ...(site.tamil ? [taHome(ctx), ...cities.filter((c) => c.ta).map((c) => taCity(ctx, c))] : []),
-  aboutPage(ctx), contactPage(ctx), privacyPage(ctx), disclaimerPage(ctx),
+  privacyPage(ctx), disclaimerPage(ctx), // About and Contact: off for now (aboutPage, contactPage)
   notFoundPage(ctx)
 ];
 

@@ -143,14 +143,14 @@
       $('[data-donut]', calc).setAttribute('aria-label', 'Gold ' + pc(gold) + ', making and other ' + pc(making + wastage + other) + ', GST ' + pc(gst) + ' of your bill');
       $('[data-rate-hint]', calc).textContent = 'Today’s ' + s.purity + ' rate is ' + inr(rate) + ' per gram' + (DATA.sample ? ' (sample rate).' : '.');
       var text = 'Gold estimate: ' + s.purity + ', ' + grams.toFixed(2) + ' g. Gold ' + inr(gold) + ' + making ' + inr(making + wastage) + ' + other ' + inr(other) + ' + GST ' + inr(gst) + (ex ? ' − old gold ' + inr(credit) : '') + ' = about ' + inr(total) + '. ' + location.href.split('#')[0];
-      $('[data-share]', calc).href = 'https://wa.me/?text=' + encodeURIComponent(text);
+      var sh = $('[data-share]', calc); if (sh) sh.href = 'https://wa.me/?text=' + encodeURIComponent(text);
     };
     pickGroup($$('[data-purity]', form), 'data-purity', function (v) { s.purity = v; run(); });
     pickGroup($$('[data-unit]', form), 'data-unit', function (v) { s.unit = v; run(); });
     form.addEventListener('input', run);
     form.addEventListener('change', run);
     form.addEventListener('submit', function (e) { e.preventDefault(); });
-    $('[data-print]', calc).addEventListener('click', function () { window.print(); });
+    var pr = $('[data-print]', calc); if (pr) pr.addEventListener('click', function () { window.print(); });
     run();
   }
 })();

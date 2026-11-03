@@ -82,7 +82,7 @@ ${filters}
 <tbody>
 ${rows}
 </tbody></table></div>
-${finder ? `<p class="hint" data-empty hidden>We don't publish that city yet. We add a city only when we have its own local rate. <a href="${ctx.url('/contact/')}">Ask for your city</a>.</p>` : ''}
+${finder ? `<p class="hint" data-empty hidden>We don't publish that city yet. We add a city only when we have its own local rate.</p>` : ''}
 ${more ? `<a class="more" href="${ctx.url('/gold-rate/')}">All cities →</a>` : ''}
 </section>`;
 }
@@ -189,16 +189,14 @@ export function quickLinks(ctx, exclude = '') {
 
 /* ---------- Right rail ---------- */
 export function railCity(ctx) {
-  const opts = ctx.cities.map((c) => `<option value="${c.slug}">${esc(c.name)}</option>`).join('');
-  return `<div class="box"><h2>Your city</h2><label class="sr" for="pick-city">Choose your city</label><select id="pick-city" class="sel" data-pick-city><option value="">Choose your city</option>${opts}</select><p class="hint">We remember it on this device, so your city's rate shows first next time.</p></div>`;
+  return railLinks('Gold rate in your city', ctx.cities.map((c) => [ctx.url(`/gold-rate/${c.slug}/`), `Gold rate in ${esc(c.name)}`, inr(ctx.rates.cities[c.slug]['22K'])]));
 }
 export function railLinks(heading, links) {
   return `<div class="box"><h2>${heading}</h2><ul class="links">${links
     .map(([href, t, v, lang]) => `<li><a href="${href}"${lang ? ` lang="${lang}" hreflang="${lang}"` : ''}>${t}<span class="num">${v}</span></a></li>`)
     .join('')}</ul></div>`;
 }
-export const railInstall = () =>
-  `<div class="box install" data-install hidden><svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" style="flex: none"><rect x="10" y="3" width="20" height="34" rx="4" fill="none" stroke="#12161A" stroke-width="2"/><rect x="15" y="12" width="10" height="10" rx="3" fill="#E8B64C"/><path d="M17 31h6" stroke="#12161A" stroke-width="2" stroke-linecap="round"/></svg><div style="display: flex; flex-direction: column; gap: 8px"><p><b>Check daily?</b> Add Daily Gold Rate India to your home screen for one-tap rates.</p><button type="button" class="btn btn-dark" data-install-btn>Add to home screen</button></div></div>`;
+export const railInstall = () => ''; // home-screen card: off for now
 
 export function popularLinks(ctx) {
   const N = ctx.rates.national, C = ctx.rates.cities;
@@ -213,8 +211,7 @@ export function popularLinks(ctx) {
 }
 
 /* ---------- Your-city bar (filled in by app.js from this device's saved city) ---------- */
-export const myCityBar = (lang = 'en') =>
-  `<div class="mycity" data-mycity hidden><div class="wrap"><span class="pin">${icon('pin', 16)}<span data-mc-name></span></span><span data-mc-rate></span><span class="since" data-mc-since></span><a data-mc-link>${lang === 'ta' ? 'திற →' : 'Open city rate →'}</a></div></div>`;
+export const myCityBar = () => ''; // saved-city bar: off for now
 
 /* ---------- Stamp line under the tiles ---------- */
 export const stamp = (parts, sample) =>

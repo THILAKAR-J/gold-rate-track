@@ -88,7 +88,7 @@ ${hero({
   })}
 ${myCityBar()}
 ${twoCol([weights, planner, adSlot(ctx, 'lb'), nearby, quickLinks(ctx), faqCard('f-h', `${esc(c.name)} gold rate questions`, faqs)].join('\n'),
-    [vs, save, adSlot(ctx, 'mr'), railMore, railInstall(), adSlot(ctx, 'sky')].join('\n'))}
+    [vs, adSlot(ctx, 'mr'), railMore, railInstall(), adSlot(ctx, 'sky')].join('\n'))}
 </main>`;
 
   const title = sov

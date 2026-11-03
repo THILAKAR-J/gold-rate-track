@@ -111,10 +111,6 @@ ${ZIG}
 </div>
 </div>
 
-<div class="share-row">
-<a class="btn btn-line" href="https://wa.me/?text=" target="_blank" rel="noopener" data-share>Share on WhatsApp</a>
-<button type="button" class="btn btn-line" data-print>Print estimate</button>
-</div>
 </aside>
 </div>
 

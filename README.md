@@ -4,7 +4,7 @@ A fast, SEO-first website for daily gold rates in India. Pages are plain HTML bu
 
 > **Status: review build.** Rates are sample data (27 October 2026), [bracketed] details are placeholders, and every page says `noindex` until real rates are entered on https://dailygoldrateindia.com. See [Before launch](#before-launch).
 
-## Pages (29)
+## Pages (27)
 
 | Pages | URLs | Main searches they target |
 |---|---|---|
@@ -15,7 +15,7 @@ A fast, SEO-first website for daily gold rates in India. Pages are plain HTML bu
 | Cities | `/gold-rate/` and `/gold-rate/{city}/` (10 cities) | today gold rate in chennai, gold rate today kerala |
 | History | `/gold-rate-history/`, `/gold-rate-history/2026/october/` | gold rate in october 2026 |
 | Calculator | `/gold-price-calculator/` | gold price calculator with gst |
-| Footer | `/about/`, `/contact/`, `/privacy-policy/`, `/disclaimer/` | trust pages AdSense needs |
+| Footer | `/privacy-policy/`, `/disclaimer/` | About and Contact are off for now; add them back before applying for AdSense |
 
 A city page is published only when we have that city's own rate. Month pages are created automatically for every month in the history data.
 
@@ -76,7 +76,6 @@ The form refuses numbers that do not add up (24K must be above 22K, 22K above 18
 ## Before launch
 
 - [ ] Real rates entered (form or feed); `"sample": false` in the data.
-- [ ] Every [bracketed] placeholder filled: owner name, city and postal address, grievance officer, courts' city.
 - [ ] Contact email is `thilakarseto@gmail.com` for now (`src/config.mjs`); move to a domain mailbox later.
 - [ ] Privacy Policy and Disclaimer reviewed by an Indian lawyer.
 - [ ] Custom domain live with HTTPS, then sitemap submitted.

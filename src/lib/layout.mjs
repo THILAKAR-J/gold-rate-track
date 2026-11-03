@@ -79,7 +79,7 @@ ${ctx.site.tamil ? `<nav aria-labelledby="fd"><h2 id="fd">Languages</h2>${a('/ta
 </div>
 <div class="wrap foot-base">
 <p>Rates are indicative, before GST and making charges, and are not investment advice. © ${ctx.year} ${esc(ctx.site.name)}.</p>
-<nav class="foot-legal" aria-label="Site information">${a('/about/', 'About')}${a('/contact/', 'Contact')}${a('/privacy-policy/', 'Privacy Policy')}${a('/disclaimer/', 'Disclaimer')}</nav>
+<nav class="foot-legal" aria-label="Site information">${a('/privacy-policy/', 'Privacy Policy')}${a('/disclaimer/', 'Disclaimer')}</nav>
 </div>
 </footer>`;
 }

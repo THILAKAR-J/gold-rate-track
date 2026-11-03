@@ -66,11 +66,11 @@ export function privacyPage(ctx) {
     h1: 'Privacy Policy',
     lead: `You can use every page without telling us who you are. Updated ${longDate(ctx.buildDate)}. Draft for legal review.`,
     title: `Privacy Policy | ${ctx.site.name}`,
-    description: `How ${ctx.site.name} handles data: no sign-up, your saved city stays on your device, and analytics or ad cookies only where the law allows. Your DPDP rights.`,
+    description: `How ${ctx.site.name} handles data: no sign-up, no forms, and analytics or ad cookies only where the law allows. What we collect and your rights under the DPDP Act.`,
     body: `<h2>Who we are</h2>
-<p>${esc(ctx.site.name)} (${esc(ctx.site.domain)}) is run by ${ph(ctx.site.legalName)}, ${ph('[postal address]')}. Contact: ${mail}.</p>
+<p>${esc(ctx.site.name)} (${esc(ctx.site.domain)}) is an independent website. Contact: ${mail}.</p>
 <h2>What we collect</h2>
-<ul><li><b>Nothing to use the site.</b> There is no sign-up, login or form you must fill.</li><li><b>Your saved city.</b> If you choose a city, your browser stores it and the last rate you saw, on your device only (local storage). It is never sent to us. Clear it any time by clearing site data in your browser.</li><li><b>Server logs.</b> Our hosting and content delivery providers record IP address, browser type and time of each request, for security and to keep the site running.</li><li><b>Emails you send us.</b> Your email address and message, used only to reply.</li></ul>
+<ul><li><b>Nothing to use the site.</b> There is no sign-up, login or form you must fill.</li><li><b>Server logs.</b> Our hosting and content delivery providers record IP address, browser type and time of each request, for security and to keep the site running.</li><li><b>Emails you send us.</b> Your email address and message, used only to reply.</li></ul>
 <h2>Analytics and ads</h2>
 <p>The site does not use analytics or advertising cookies today. When we add Google Analytics or Google AdSense, Google may use cookies to count visits and to show and measure ads. Where the law requires it, we will ask for your consent first, and we will update this page before they go live. Google explains how it uses data at <a href="https://policies.google.com/technologies/partner-sites" rel="noopener">policies.google.com/technologies/partner-sites</a>.</p>
 <h2>Sharing</h2>
@@ -107,7 +107,7 @@ export function disclaimerPage(ctx) {
 <h2 id="corrections">Corrections</h2>
 <p>Report an error to ${mail}. We fix confirmed errors quickly and note the correction on the page.</p>
 <h2 id="terms">Using this site</h2>
-<p>You may quote our rates with a link to the page. Do not copy the site in bulk, scrape it, or present our data as your own. These terms are governed by the laws of India, and courts in ${ph('[city]')} have jurisdiction.</p>`
+<p>You may quote our rates with a link to the page. Do not copy the site in bulk, scrape it, or present our data as your own. These terms are governed by the laws of India.</p>`
   });
 }
 
