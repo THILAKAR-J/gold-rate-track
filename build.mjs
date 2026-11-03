@@ -8,6 +8,7 @@ import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { site } from './src/config.mjs';
+import { EMPTY, applyBoards, TOKEN_HELP } from './src/lib/content.mjs';
 import { homePage } from './src/pages/home.mjs';
 import { caratPage, silverPage, ibjaPage, unitPage, UNITS } from './src/pages/rates.mjs';
 import { cityPage, citiesHub } from './src/pages/city.mjs';
@@ -23,6 +24,8 @@ const read = (p) => readFileSync(join(ROOT, p), 'utf8');
 
 const rates = JSON.parse(read('data/rates.json'));
 const cities = JSON.parse(read('data/cities.json'));
+const content = existsSync(join(ROOT, 'data/content.json')) ? { ...EMPTY, ...JSON.parse(read('data/content.json')) } : { ...EMPTY };
+const boards = applyBoards(rates, cities, content); // city board rates typed in the admin for today
 validate(rates, cities);
 
 const base = FLAT ? '' : (process.env.BASE_PATH || '').replace(/\/$/, '');
@@ -40,7 +43,7 @@ setStampExtra(rates.carriedFrom
   ? `No IBJA rate today: last rate, ${new Date(rates.carriedFrom + 'T12:00:00Z').toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' })}`
   : '');
 const ctx = {
-  site, rates, cities, base,
+  site, rates, cities, base, content, adminIndex: [],
   year: Number(rates.date.slice(0, 4)),
   buildDate: new Date().toISOString().slice(0, 10),
   months: monthsOf(rates.history),
@@ -93,6 +96,7 @@ cpSync(join(ROOT, 'public'), OUT, { recursive: true });
 
 const seen = new Set();
 for (const p of pages) {
+  if (content.pages[p.path]?.noindex) p.noindex = true;
   if (seen.has(p.path)) throw new Error('duplicate page path ' + p.path);
   seen.add(p.path);
   const file = FLAT ? flatName(p.path) : p.path.endsWith('.html') ? p.path.slice(1) : join(p.path, 'index.html');
@@ -109,7 +113,16 @@ const urls = indexable.map((p) => {
   return `  <url>\n    <loc>${ctx.abs(p.path)}</loc>\n    <lastmod>${lastmod}</lastmod>${alts ? '\n' + alts : ''}\n  </url>`;
 }).join('\n');
 writeFileSync(join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls}\n</urlset>\n`);
-writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${ctx.abs('/sitemap.xml')}\n`);
+writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /admin/\n\nSitemap: ${ctx.abs('/sitemap.xml')}\n`);
+// What the admin panel reads: every page's default and current SEO fields, plus today's rates.
+mkdirSync(join(OUT, 'admin'), { recursive: true });
+writeFileSync(join(OUT, 'admin/pages.json'), JSON.stringify({
+  builtAt: new Date().toISOString(), branch: process.env.CF_PAGES_BRANCH || process.env.GITHUB_REF_NAME || 'local', siteUrl, indexable: site.index,
+  rates: { date: rates.date, session: rates.session, carriedFrom: rates.carriedFrom || null, updatedAt: rates.updatedAt, national: rates.national, silverPerKg: rates.silverPerKg, sample: !!rates.sample },
+  cities: cities.map((c) => ({ slug: c.slug, name: c.name, unit: c.unit.label, source: c.source, local: !!rates.cities[c.slug].local, r22: rates.cities[c.slug]['22K'] })),
+  boards, tokens: TOKEN_HELP,
+  pages: ctx.adminIndex.filter((x) => x.path !== '/404.html').map((x) => ({ ...x, inSitemap: !content.pages[x.path]?.noindex }))
+}));
 writeFileSync(join(OUT, 'manifest.webmanifest'), JSON.stringify({
   name: site.name, short_name: site.shortName, lang: 'en-IN', start_url: ctx.url('/'), scope: (FLAT ? './' : base + '/'),
   display: 'standalone', background_color: '#FBF8F2', theme_color: '#6E1A2A',

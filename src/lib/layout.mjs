@@ -1,5 +1,6 @@
 // Page shell: <head> with all SEO tags, header, footer and phone tab bar.
 import { esc } from './format.mjs';
+import { applyPage } from './content.mjs';
 
 export const LOGO = `<svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="17" fill="#6E1A2A"/><circle cx="18" cy="18" r="12" fill="none" stroke="#F2C35B" stroke-width="2"/><path d="M11 21h14l-2.5-6h-9z" fill="#F2C35B"/></svg>`;
 const LOGO_TEXT = '<span class="logo-t"><b>Daily Gold Rate</b><span>INDIA</span></span>';
@@ -125,6 +126,7 @@ export function adSlot(ctx, kind) {
  *      alternates: [{lang:'en-IN'|'ta-IN', path}], altPath (the other language's page), ogType }
  */
 export function page(ctx, o) {
+  o = applyPage(ctx, o);
   const lang = o.lang || 'en';
   const canonical = ctx.abs(o.path);
   const robots = o.noindex || !ctx.site.index ? 'noindex,follow' : 'index,follow,max-image-preview:large,max-snippet:-1';

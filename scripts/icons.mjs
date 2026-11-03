@@ -2,12 +2,12 @@
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 const out = (f) => fileURLToPath(new URL('../public/icons/' + f, import.meta.url));
-const mark = (pad) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 34" width="100%" height="100%" style="display:block"><rect x="${pad}" y="${pad}" width="${34 - 2 * pad}" height="${34 - 2 * pad}" rx="${pad ? 0 : 9}" fill="#12161A"/><g transform="translate(17 17) scale(${pad ? 0.8 : 1}) translate(-17 -17)"><path d="M9 23 L12 12 H22 L25 23 Z" fill="#E8B64C"/><path d="M6 27 H28" stroke="#E8B64C" stroke-width="1.6" stroke-linecap="round"/></g></svg>`;
+const mark = (full) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="100%" height="100%" style="display:block">${full ? '<rect width="36" height="36" fill="#6E1A2A"/>' : '<circle cx="18" cy="18" r="17" fill="#6E1A2A"/>'}<g transform="translate(18 18) scale(${full ? 0.78 : 1}) translate(-18 -18)"><circle cx="18" cy="18" r="12" fill="none" stroke="#F2C35B" stroke-width="2"/><path d="M11 21h14l-2.5-6h-9z" fill="#F2C35B"/></g></svg>`;
 const b = await chromium.launch();
 const p = await b.newPage();
-for (const [f, s, pad] of [['icon-180.png', 180, 0], ['icon-192.png', 192, 0], ['icon-512.png', 512, 0], ['icon-maskable-512.png', 512, 0.0001]]) {
+for (const [f, s, pad] of [['icon-180.png', 180, 1], ['icon-192.png', 192, 0], ['icon-512.png', 512, 0], ['icon-maskable-512.png', 512, 1]]) {
   await p.setViewportSize({ width: s, height: s });
-  await p.setContent(`<html><body style="margin:0;background:${pad ? '#12161A' : 'transparent'}">${mark(pad ? 0.0001 : 1)}</body></html>`);
+  await p.setContent(`<html><body style="margin:0;background:${pad ? '#6E1A2A' : 'transparent'}">${mark(pad)}</body></html>`);
   await p.screenshot({ path: out(f), omitBackground: !pad });
 }
 await b.close();

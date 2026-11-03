@@ -13,7 +13,9 @@ const RATES = JSON.parse(readFileSync(fileURLToPath(new URL('../data/rates.json'
 const SET = process.env.SITE_INDEX || 'auto';
 const INDEX = SET === 'true' || (SET === 'auto' && SITE === 'https://dailygoldrateindia.com' && !RATES.sample);
 const walk = (d) => readdirSync(d).flatMap((f) => (statSync(join(d, f)).isDirectory() ? walk(join(d, f)) : [join(d, f)]));
-const files = walk(ROOT).filter((f) => f.endsWith('.html'));
+const files = walk(ROOT).filter((f) => f.endsWith('.html') && !relative(ROOT, f).startsWith('admin'));
+const CONTENT = (() => { try { return JSON.parse(readFileSync(fileURLToPath(new URL('../data/content.json', import.meta.url)), 'utf8')); } catch { return { pages: {} }; } })();
+const hidden = (url) => !!CONTENT.pages?.[url.slice(SITE.length)]?.noindex; // pages the owner set to noindex in the admin
 const pathOf = (f) => '/' + relative(ROOT, f).replace(/index\.html$/, '');
 const errors = [], warnings = [];
 const err = (f, m) => errors.push(`${relative(ROOT, f) || f}: ${m}`);
@@ -28,7 +30,7 @@ const ids = new Map([...pages.values()].map((p) => [p.file, new Set([...p.html.m
 const titles = new Map(), descs = new Map();
 
 for (const [url, { file: f, html }] of pages) {
-  const is404 = f.endsWith('404.html');
+  const is404 = f.endsWith('404.html') || hidden(url);
   // ---- head ----
   const title = (html.match(/<title>([^<]*)<\/title>/) || [])[1];
   if (!title) err(f, 'missing <title>');
@@ -155,7 +157,7 @@ for (const l of locs) {
   if (!p) smErr(`${l} is not a built page`);
   else if (/<meta name="robots" content="noindex/.test(p.html) && INDEX) smErr(`${l} is noindex but listed`);
 }
-for (const [url, p] of pages) if (!p.file.endsWith('404.html') && !locs.includes(url)) smErr(`${url} missing from sitemap`);
+for (const [url, p] of pages) if (!p.file.endsWith('404.html') && !hidden(url) && !locs.includes(url)) smErr(`${url} missing from sitemap`);
 for (const m of sm.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)) if (!/^\d{4}-\d{2}-\d{2}$/.test(m[1])) smErr(`bad lastmod ${m[1]}`);
 for (const m of sm.matchAll(/<url>([\s\S]*?)<\/url>/g)) {
   const loc = m[1].match(/<loc>([^<]+)/)[1];
