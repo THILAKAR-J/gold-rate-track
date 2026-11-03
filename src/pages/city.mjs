@@ -45,7 +45,7 @@ export function cityPage(ctx, c) {
     const nr = R.cities[n.slug], nl = localUnit(n);
     return `<tr><th scope="row"><a href="${ctx.url(`/gold-rate/${n.slug}/`)}">${esc(n.name)}</a><small>${esc(n.state)}</small></th><td class="hl num">${inr(nr['22K'])}</td><td class="num">${nl.label} ${inr(nr['22K'] * nl.g)}</td></tr>`;
   }).join('\n');
-  const nearby = card('n-h', `Gold rate near ${c.name}`, 'Each city page uses its own local board.',
+  const nearby = card('n-h', `Gold rate near ${c.name}`, (Object.values(R.cities).some((x) => x.local) ? 'Each city page uses its own local board.' : 'National IBJA rate, in each city\'s local unit.'),
     `<div class="tbl"><table class="t"><caption class="sr">22K gold rate in cities near ${esc(c.name)} on ${longDate(date)}</caption><thead><tr><th scope="col">City</th><th scope="col" class="hl">22K / gram</th><th scope="col">Local unit, 22K</th></tr></thead><tbody>
 ${nearRows}
 </tbody></table></div>
@@ -56,13 +56,15 @@ ${nearRows}
         { q: `What is the 1 ${uw} gold rate in ${c.name} today?`, a: `${inr(r['22K'] * 8)} for 22K and ${inr(r['24K'] * 8)} for 24K on ${longDate(date)}, before GST and making charges.` },
         { q: `What is the 1 gram gold rate in ${c.name} today?`, a: `${inr(r['22K'])} for 22K (916) and ${inr(r['24K'])} for 24K.` },
         { q: `Why do ${c.name} shops quote per ${uw}?`, a: `A ${uw} is 8 grams and is the usual unit for jewellery in ${c.state === 'State rate' ? c.name : c.state}.` },
-        { q: `When is the ${c.name} gold rate updated?`, a: `The ${c.name} board is usually announced in the morning, and again if the market moves sharply. The time is shown above the rate.` }
+        { q: `When is the ${c.name} gold rate updated?`, a: r.local === false ? `We update it from the IBJA benchmark after its morning and evening rates, Monday to Friday. On weekends and market holidays the last IBJA rate stays.` : `The ${c.name} board is usually announced in the morning, and again if the market moves sharply. The time is shown above the rate.` }
       ]
     : [
         { q: `What is the 10 gram gold rate in ${c.name} today?`, a: `${inr(r['22K'] * 10)} for 22K and ${inr(r['24K'] * 10)} for 24K on ${longDate(date)}, before GST and making charges.` },
         { q: `What is the 1 gram gold rate in ${c.name} today?`, a: `${inr(r['22K'])} for 22K (916) and ${inr(r['24K'])} for 24K.` },
-        { q: `Why is the ${c.name} rate different from the national rate?`, a: 'Transport, the local association rate and demand add small premiums. The table on this page shows the difference.' },
-        { q: `When is the ${c.name} gold rate updated?`, a: `The ${c.name} rate is usually updated in the morning, and again if the market moves sharply.` }
+        r.local === false
+          ? { q: `Is the ${c.name} rate the same as the national rate?`, a: `On this page, yes: we show the IBJA national rate for ${c.name} until we have its local board rate. Shops in ${c.name} add local premiums, 3% GST and making charges, so their bill is higher.` }
+          : { q: `Why is the ${c.name} rate different from the national rate?`, a: 'Transport, the local association rate and demand add small premiums. The table on this page shows the difference.' },
+        { q: `When is the ${c.name} gold rate updated?`, a: r.local === false ? `We update it from the IBJA benchmark after its morning and evening rates, Monday to Friday. On weekends and market holidays the last IBJA rate stays.` : `The ${c.name} rate is usually updated in the morning, and again if the market moves sharply.` }
       ];
 
   const vs = `<div class="box"><h2>${esc(c.name)} vs India</h2><div class="tbl"><table class="t"><caption class="sr">${esc(c.name)} and national gold rate per gram</caption><thead><tr><th scope="col">Per gram</th><th scope="col">${esc(c.name)}</th><th scope="col">India</th></tr></thead><tbody>${['24K', '22K', '18K']
@@ -113,7 +115,7 @@ export function citiesHub(ctx) {
 ${hero({
     crumbsHtml: crumbs(ctx, crumbList),
     h1: 'Gold Rate Today in Indian Cities',
-    answer: `22K and 24K gold rates for ${ctx.cities.length} cities on <time datetime="${date}">${longDate(date)}</time>, each from its own local board and compared with the national 22K rate of <strong class="num">${inr(N['22K'].g)}</strong> per gram.`,
+    answer: `22K and 24K gold rates for ${ctx.cities.length} cities on <time datetime="${date}">${longDate(date)}</time>, ${Object.values(R.cities).some((x) => x.local) ? 'each from its own local board and compared with' : 'shown at'} the national 22K rate of <strong class="num">${inr(N['22K'].g)}</strong> per gram.`,
     stampHtml: stamp([`${live}Updated <time datetime="${R.updatedAt}">${clock(R.updatedAt)} IST</time>`, 'Before 3% GST and making charges'], R.sample ? 'Sample rates' : '')
   })}
 ${myCityBar()}

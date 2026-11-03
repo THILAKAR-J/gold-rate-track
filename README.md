@@ -2,7 +2,7 @@
 
 A fast, SEO-first website for daily gold rates in India. Pages are plain HTML built from one data file, so every rate is in the page source: Google reads it on the first crawl and phones load it instantly. A small script adds the city filter, the saved-city bar and the calculator.
 
-> **Status: review build.** Rates are sample data (27 October 2026), [bracketed] details are placeholders, and every page says `noindex` until real rates are entered on https://dailygoldrateindia.com. See [Before launch](#before-launch).
+> **Status:** real IBJA rates. Pages are indexable on https://dailygoldrateindia.com and `noindex` on the github.io review address. See [Before launch](#before-launch).
 
 ## Pages (27)
 
@@ -39,22 +39,24 @@ npm run dev        # build and serve at http://localhost:4173
 npm run check      # build, then run every SEO and quality check
 ```
 
-## Daily rates
+## Daily rates (automatic, from IBJA)
 
-**By hand, from a phone or laptop (no coding):** GitHub → Actions → **Build and deploy** → **Run workflow**, fill the boxes, press Run. In about two minutes the site is rebuilt with the new rates.
+`scripts/ibja-rates.mjs` reads https://ibjarates.com/ in the GitHub workflow and rebuilds the site. No one needs to type rates.
 
-| Box | Example | Notes |
-|---|---|---|
-| 24K / 22K / 18K per gram | `14329` / `13135` / `10747` | Required. Commas and ₹ are fine. |
-| Silver per kg | `181000` | Needed the first time; after that, blank keeps yesterday's. |
-| IBJA 999 | `14310` | Optional. Defaults to the 24K rate. |
-| Yesterday | `14200/13017/10650` | **First time only** (24K/22K/18K), so today's change is right. |
-| Cities | `chennai=14340/13145/10760; mumbai=…` | Optional. 24K/22K/18K. Cities not listed show the national rate, labelled "local board rate not yet available". |
-| Date, note | `2026-11-03` | Optional. Date defaults to today (IST). |
+| When (IST) | What happens |
+|---|---|
+| 12:01 AM, every day | The date moves to today. If IBJA has not published yet, the last rate stays, labelled with its day. |
+| 12:45 PM, Mon to Fri | IBJA morning rate. |
+| 6:15 PM and 7:15 PM, Mon to Fri | IBJA closing rate (the one used for history). |
 
-The form refuses numbers that do not add up (24K must be above 22K, 22K above 18K; city names must match). Each entry is committed to `data/rates.json`, and the last 30 days build the history pages and charts.
+- 24K = IBJA 999, 22K = 916, 18K = 750, per gram, before 3% GST and making charges. Silver = IBJA 999 per kg.
+- History (last 30 trading days) comes from IBJA's own closing rates.
+- IBJA does not publish on Saturdays, Sundays and market holidays. Those days show today's date with the last IBJA rate, change 0, and a line saying which day the rate is from.
+- Every city shows the national IBJA rate, labelled "local board rate is not yet available".
+- If ibjarates.com is down or changes its page, the run logs a warning, keeps the last rates and still publishes.
+- **Rights:** ibjarates.com says "All Rights Reserved" and asks businesses to use the official IBJA API. To be fully safe, subscribe to the IBJA API and point the script at it.
 
-**Automatic:** add a repository secret `RATES_FEED_URL` (and `RATES_FEED_TOKEN`). The scheduled run at 12:20 PM IST, Monday to Saturday, merges the feed through `scripts/merge-rates.mjs`. Use a source licensed for republishing.
+**By hand (only if IBJA is down):** Actions → Build and deploy → Run workflow, type 24K/22K/18K per gram, press Run. Leave every box blank to fetch IBJA immediately. The next scheduled IBJA fetch replaces typed rates.
 
 ## Settings (GitHub → Settings → Secrets and variables → Actions → Variables)
 
@@ -75,7 +77,6 @@ The form refuses numbers that do not add up (24K must be above 22K, 22K above 18
 
 ## Before launch
 
-- [ ] Real rates entered (form or feed); `"sample": false` in the data.
 - [ ] Contact email is `thilakarseto@gmail.com` for now (`src/config.mjs`); move to a domain mailbox later.
 - [ ] Privacy Policy and Disclaimer reviewed by an Indian lawyer.
 - [ ] Custom domain live with HTTPS, then sitemap submitted.

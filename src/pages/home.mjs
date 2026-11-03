@@ -73,7 +73,7 @@ ${hero({
   })}
 ${myCityBar()}
 ${twoCol(
-    [weights, cityTable(ctx, { heading: 'Gold rate today in major cities', sub: "Each city's own board, with the unit its shops use.", cities: ctx.cities }), adSlot(ctx, 'lb'), whyMoved(ctx), trend, quickLinks(ctx), faqCard('f-h', 'Gold rate questions', faqs)].join('\n'),
+    [weights, cityTable(ctx, { heading: 'Gold rate today in major cities', sub: Object.values(ctx.rates.cities).some((x) => x.local) ? "Each city's own board, with the unit its shops use." : "National IBJA rate, in the unit each city's shops use.", cities: ctx.cities }), adSlot(ctx, 'lb'), whyMoved(ctx), trend, quickLinks(ctx), faqCard('f-h', 'Gold rate questions', faqs)].join('\n'),
     [railCity(ctx), adSlot(ctx, 'mr'), popularLinks(ctx), railInstall(), adSlot(ctx, 'sky')].join('\n')
   )}
 </main>`;

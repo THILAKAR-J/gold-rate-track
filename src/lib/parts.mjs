@@ -214,8 +214,11 @@ export function popularLinks(ctx) {
 export const myCityBar = () => ''; // saved-city bar: off for now
 
 /* ---------- Stamp line under the tiles ---------- */
+let stampExtra = '';
+// On weekends and holidays every rate stamp also says which day's IBJA rate is shown.
+export const setStampExtra = (s) => { stampExtra = s || ''; };
 export const stamp = (parts, sample) =>
-  `<p class="stamp">${parts.map((p) => `<span>${p}</span>`).join('')}${sample ? `<span class="tag">${sample}</span>` : ''}</p>`;
+  `<p class="stamp">${[...parts, ...(stampExtra ? [stampExtra] : [])].map((p) => `<span>${p}</span>`).join('')}${sample ? `<span class="tag">${sample}</span>` : ''}</p>`;
 export const live = '<span class="live" aria-hidden="true"></span>';
 
 export { sinr };

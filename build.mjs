@@ -33,6 +33,10 @@ const hash = (p) => createHash('sha256').update(readFileSync(join(ROOT, 'public'
 const versions = Object.fromEntries(['assets/site.css', 'assets/app.js'].map((p) => [p, hash(p)]));
 const flatName = (p) => (p === '/' ? 'index.html' : p.endsWith('.html') ? p.slice(1) : p.replace(/^\/|\/$/g, '').replace(/\//g, '-') + '.html');
 
+import { setStampExtra } from './src/lib/parts.mjs';
+setStampExtra(rates.carriedFrom
+  ? `No IBJA rate today: last rate, ${new Date(rates.carriedFrom + 'T12:00:00Z').toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' })}`
+  : '');
 const ctx = {
   site, rates, cities, base,
   year: Number(rates.date.slice(0, 4)),
@@ -121,7 +125,7 @@ function validate(r, cs) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(r.date)) fail('date must be YYYY-MM-DD');
   if (!Array.isArray(r.history) || r.history.length < 2) fail('history needs at least 2 days (today and yesterday)');
   const last = r.history.at(-1);
-  if (last.date !== r.date) fail(`last history day (${last.date}) must equal date (${r.date})`);
+  if (last.date !== r.date && !(r.carriedFrom && last.date === r.carriedFrom && r.carriedFrom < r.date)) fail(`last history day (${last.date}) must equal date (${r.date})`);
   if (last['24K'] !== r.national['24K'].g || last['22K'] !== r.national['22K'].g) fail('last history day must match national rates');
   for (const c of cs) {
     const x = r.cities[c.slug];

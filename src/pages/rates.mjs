@@ -140,7 +140,7 @@ ${['mcx', 'board'].filter((x) => B[x]).map((x) => `<tr><th scope="row">${esc(B[x
 </div>`);
   const faqs = [
     { q: 'What is the IBJA gold rate today?', a: `${inr(ib.g24)} per gram for 999 gold, published at ${clock(ib.at)} on ${longDate(date)}, excluding GST.` },
-    { q: 'Why is my jeweller\'s rate different from IBJA?', a: 'Shops add transport, local association rates and their margin. Compare your city page for the local board rate.' },
+    { q: 'Why is my jeweller\'s rate different from IBJA?', a: 'Shops add transport, local association rates and their margin. So a shop\'s board is often a little higher than IBJA.' },
     { q: 'When is the IBJA rate published?', a: 'Around noon and again in the evening on business days. On holidays the last published rate stands.' }
   ];
   const main = `<main id="main">
@@ -149,14 +149,14 @@ ${hero({
     h1: 'IBJA Gold Rate Today',
     answer: `Today, <time datetime="${date}">${longDate(date)}</time>, the IBJA benchmark for 999 gold is <strong class="num">${inr(ib.g24)}</strong> per gram, published at ${clock(ib.at)} IST, excluding GST.`,
     tilesHtml: t,
-    stampHtml: stamp([`${live}IBJA published <time datetime="${ib.at}">${clock(ib.at)} IST</time>`, 'Excludes GST'], sampleTag(ctx))
+    stampHtml: stamp([`${live}IBJA ${R.session === 'AM' ? 'morning' : 'closing'} rate, updated <time datetime="${ib.at}">${clock(ib.at)} IST</time>`, 'Excludes GST'], sampleTag(ctx))
   })}
 ${myCityBar()}
 ${twoCol([card('b-h', B.mcx || B.board ? 'IBJA, MCX and shop rates side by side' : 'IBJA benchmark today', '24 carat, per gram.', body), explain, adSlot(ctx, 'lb'), quickLinks(ctx, path), faqCard('f-h', 'IBJA rate questions', faqs)].join('\n'),
     [popularLinks(ctx), adSlot(ctx, 'mr'), railInstall()].join('\n'))}
 </main>`;
   const title = `IBJA Gold Rate Today (${medDate(date)}): 999 Gold ${inr(ib.g24)} per Gram`;
-  const description = `IBJA gold rate today: ${inr(ib.g24)} per gram for 999 gold (${medDate(date)}, ${clock(ib.at)}). What the IBJA benchmark is and why shop rates differ.`;
+  const description = `IBJA gold rate today: ${inr(ib.g24)} per gram for 999 gold (${medDate(date)}, ${R.session === "AM" ? "morning" : "closing"} rate). What the IBJA benchmark is and why shop rates differ.`;
   return pageOut(ctx, { path, title, description, active: '', main, faqs, crumbsList: [{ name: 'Home', path: '/' }, { name: 'IBJA gold rate' }] });
 }
 

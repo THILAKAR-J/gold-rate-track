@@ -4,10 +4,15 @@ on:
   push:
     branches: [main]
   pull_request:
-  # 12:20 PM IST, Monday to Saturday: just after the IBJA noon benchmark.
+  # IBJA rates (times IST): 12:01 AM every day rolls the date; 12:45 PM after the morning rate;
+  # 6:15 PM and 7:15 PM after the evening (closing) rate, Monday to Friday.
   schedule:
-    - cron: '50 6 * * 1-6'
-  # Actions → Build and deploy → Run workflow: type today's rates (per gram, rupees). Leave blank to just rebuild.
+    - cron: '31 18 * * *'
+    - cron: '15 7 * * 1-5'
+    - cron: '45 12 * * 1-5'
+    - cron: '45 13 * * 1-5'
+  # Actions → Build and deploy → Run workflow. Leave every box blank to fetch IBJA now; type rates only if IBJA is down
+  # (the next scheduled IBJA fetch replaces typed rates).
   workflow_dispatch:
     inputs:
       gold_24k: { description: '24K per gram today (e.g. 14329)', required: false }
@@ -39,17 +44,14 @@ jobs:
         with:
           node-version: 20
 
-      - name: Update rates from feed (only if RATES_FEED_URL secret is set)
+      - name: Fetch today's IBJA rates from ibjarates.com
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.gold_24k == '')
-        env:
-          RATES_FEED_URL: ${{ secrets.RATES_FEED_URL }}
-          RATES_FEED_TOKEN: ${{ secrets.RATES_FEED_TOKEN }}
         run: |
-          node scripts/update-rates.mjs
+          node scripts/ibja-rates.mjs
           if ! git diff --quiet data/rates.json; then
             git config user.name "rates-bot"
             git config user.email "rates-bot@users.noreply.github.com"
-            git commit -am "Update rates for $(node -p "require('./data/rates.json').date")"
+            git commit -am "IBJA rates for $(node -p "const r=require('./data/rates.json');r.date+' '+r.session")"
             git push
           fi
 
