@@ -39,9 +39,13 @@ const flatName = (p) => (p === '/' ? 'index.html' : p.endsWith('.html') ? p.slic
 import { setStampExtra, setHeroDate } from './src/lib/parts.mjs';
 import { weekday as wdName, longDate as longD } from './src/lib/format.mjs';
 setHeroDate(`${wdName(rates.date)}, ${longD(rates.date)}`);
-setStampExtra(rates.carriedFrom
-  ? `No IBJA rate today: last rate, ${new Date(rates.carriedFrom + 'T12:00:00Z').toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' })}`
-  : '');
+{
+  // Weekday before 2 PM IST: today's IBJA rate is simply not out yet. Later, or on a weekend: no rate today.
+  const ist = new Date(Date.now() + 5.5 * 3600e3), wd = new Date(rates.date + 'T12:00:00Z').getUTCDay();
+  const pendingToday = rates.date === ist.toISOString().slice(0, 10) && wd >= 1 && wd <= 5 && ist.getUTCHours() < 14;
+  const last = rates.carriedFrom && new Date(rates.carriedFrom + 'T12:00:00Z').toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' });
+  setStampExtra(rates.carriedFrom ? (pendingToday ? `Today's IBJA rate comes after 12:30 PM; showing ${last}` : `No IBJA rate today: last rate, ${last}`) : '');
+}
 const ctx = {
   site, rates, cities, base, content, adminIndex: [],
   year: Number(rates.date.slice(0, 4)),

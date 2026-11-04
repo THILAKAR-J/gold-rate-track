@@ -77,8 +77,11 @@ export function buildRates(day, old, now = new Date()) {
   const chg = (k) => n[k] - p[k];
   const at = now.toISOString().replace(/\.\d+Z$/, 'Z');
   const word = (v) => (v === 0 ? 'unchanged' : `${v > 0 ? 'up' : 'down'} ₹${Math.abs(v).toLocaleString('en-IN')} per gram`);
+  const wd = new Date(today + 'T12:00:00Z').getUTCDay();
   const note = carried
-    ? `IBJA does not publish rates on weekends and market holidays, so today's rate is the last IBJA rate, from ${longDate(carried)}.`
+    ? wd >= 1 && wd <= 5
+      ? `Today's IBJA rate is published after 12:30 PM. Until then this is the last IBJA rate, from ${longDate(carried)}.`
+      : `IBJA does not publish rates on weekends and market holidays, so today's rate is the last IBJA rate, from ${longDate(carried)}.`
     : session === 'AM'
       ? `IBJA morning rate. 24K gold is ${word(chg('24K'))} from the last closing rate; the evening rate follows around 6 PM.`
       : `IBJA closing rate. 24K gold is ${word(chg('24K'))} from the previous trading day.`;
