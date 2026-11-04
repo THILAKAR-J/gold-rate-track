@@ -4,10 +4,14 @@ on:
   push:
     branches: [main, dev]
   pull_request:
-  # IBJA rates (times IST): 12:01 AM every day rolls the date; 12:45 PM after the morning rate;
+  # IBJA rates (times IST): 12:01, 12:37 and 1:13 AM every day roll the date; 12:45 PM after the morning rate;
   # 6:15 PM and 7:15 PM after the evening (closing) rate, Monday to Friday.
+  # GitHub can start scheduled runs late at busy times, so the midnight date change has three tries;
+  # a run that finds nothing new commits nothing.
   schedule:
     - cron: '31 18 * * *'
+    - cron: '7 19 * * *'
+    - cron: '43 19 * * *'
     - cron: '15 7 * * 1-5'
     - cron: '45 12 * * 1-5'
     - cron: '45 13 * * 1-5'
