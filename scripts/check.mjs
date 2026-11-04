@@ -13,7 +13,7 @@ const RATES = JSON.parse(readFileSync(fileURLToPath(new URL('../data/rates.json'
 const SET = process.env.CF_PAGES_BRANCH === 'main' ? 'auto' : process.env.SITE_INDEX || 'auto';
 const INDEX = SET === 'true' || (SET === 'auto' && SITE === 'https://dailygoldrateindia.com' && !RATES.sample);
 const walk = (d) => readdirSync(d).flatMap((f) => (statSync(join(d, f)).isDirectory() ? walk(join(d, f)) : [join(d, f)]));
-const files = walk(ROOT).filter((f) => f.endsWith('.html') && !relative(ROOT, f).startsWith('admin'));
+const files = walk(ROOT).filter((f) => f.endsWith('.html') && !relative(ROOT, f).startsWith('admin') && !/^google[0-9a-f]+\.html$/.test(relative(ROOT, f))); // google…html = Search Console verification file
 const CONTENT = (() => { try { return JSON.parse(readFileSync(fileURLToPath(new URL('../data/content.json', import.meta.url)), 'utf8')); } catch { return { pages: {} }; } })();
 const hidden = (url) => !!CONTENT.pages?.[url.slice(SITE.length)]?.noindex; // pages the owner set to noindex in the admin
 const pathOf = (f) => '/' + relative(ROOT, f).replace(/index\.html$/, '');
