@@ -39,6 +39,16 @@ npm run dev        # build and serve at http://localhost:4173
 npm run check      # build, then run every SEO and quality check
 ```
 
+## Hosting, admin and updates
+
+- **Cloudflare Pages**, project `dailygoldrateindia`, connected to this repository. Build command `npm run build:cf` (build + every SEO check), output `dist`.
+  - `main` → https://dailygoldrateindia.com (production). `dev` → https://dev.dailygoldrateindia.pages.dev (preview, noindex).
+  - Every push builds by itself; if a check fails, the deployment fails and the old site stays up.
+- **Admin:** `/admin/` on either address. Edits titles, descriptions, H1, extra text, FAQ and city board rates in `data/content.json` and commits to that branch, so the site rebuilds in about 2 minutes.
+  - Cloudflare variables (Production and Preview): `SITE_URL`, `GITHUB_REPO`; secrets `ADMIN_PASSWORD`, `SESSION_SECRET`, `GITHUB_TOKEN` (fine-grained, this repo, Contents + Actions read/write).
+  - Local test: `npm run admin` (password `test`, saves to data/content.json).
+- **Rates:** the GitHub workflow fetches IBJA on schedule, commits to `main` and copies the rates to `dev`.
+
 ## Daily rates (automatic, from IBJA)
 
 `scripts/ibja-rates.mjs` reads https://ibjarates.com/ in the GitHub workflow and rebuilds the site. No one needs to type rates.

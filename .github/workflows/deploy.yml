@@ -31,11 +31,9 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages-${{ github.ref }}
+  group: rates-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -99,52 +97,3 @@ jobs:
         env:
           SITE_URL: https://dailygoldrateindia.com
         run: node build.mjs && node scripts/check.mjs
-
-      - name: Read Pages settings
-        id: pages
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-        uses: actions/configure-pages@v5
-
-      - name: Build
-        env:
-          SITE_URL: ${{ steps.pages.outputs.base_url || 'http://localhost:4173' }}
-          BASE_PATH: ${{ steps.pages.outputs.base_path }}
-          SITE_INDEX: ${{ vars.SITE_INDEX }}
-          ADSENSE_CLIENT: ${{ vars.ADSENSE_CLIENT }}
-        run: node build.mjs
-
-      - name: SEO and quality checks (titles, descriptions, canonicals, hreflang, schema, sitemap, links)
-        env:
-          SITE_URL: ${{ steps.pages.outputs.base_url || 'http://localhost:4173' }}
-          BASE_PATH: ${{ steps.pages.outputs.base_path }}
-          SITE_INDEX: ${{ vars.SITE_INDEX }}
-        run: node scripts/check.mjs
-
-      # Until Cloudflare Pages is set up: the dev branch is published at <review address>/dev/ for checking.
-      - name: Build the dev branch preview into /dev/
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-        env:
-          SITE_URL: ${{ steps.pages.outputs.base_url }}/dev
-          BASE_PATH: ${{ steps.pages.outputs.base_path }}/dev
-        run: |
-          if git ls-remote --exit-code --heads origin dev >/dev/null; then
-            git fetch -q origin dev && git worktree add -q ../devsrc origin/dev
-            (cd ../devsrc && node build.mjs && node scripts/check.mjs)
-            rm -rf dist/dev && cp -r ../devsrc/dist dist/dev
-          fi
-
-      - uses: actions/upload-pages-artifact@v3
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-        with:
-          path: dist
-
-  deploy:
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
