@@ -15,7 +15,8 @@
     "update-rates": "node scripts/update-rates.mjs",
     "check": "node build.mjs && node scripts/check.mjs",
     "icons": "node scripts/icons.mjs",
-    "og-image": "node scripts/og-image.mjs"
+    "og-image": "node scripts/og-image.mjs",
+    "build:cf": "node build.mjs && node scripts/check.mjs"
   },
   "license": "UNLICENSED"
 }
