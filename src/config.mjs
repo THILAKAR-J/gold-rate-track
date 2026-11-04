@@ -9,7 +9,8 @@ export const site = {
   email: 'thilakarseto@gmail.com',
   tamil: false, // Tamil pages (/ta/) and the language switch; set true to bring them back
   // Indexing: automatic on the real domain once rates are real. SITE_INDEX=false forces noindex; SITE_INDEX=true forces it on.
-  indexSetting: process.env.SITE_INDEX || 'auto',
+  // On Cloudflare's live branch (main) indexing is always automatic; SITE_INDEX only steers previews and local builds.
+  indexSetting: process.env.CF_PAGES_BRANCH === 'main' ? 'auto' : process.env.SITE_INDEX || 'auto',
   // Ads stay off at launch (plan: switch on after AdSense approval, week 3 to 4).
   // ADSENSE_CLIENT=ca-pub-... turns on the reserved slots.
   adsenseClient: process.env.ADSENSE_CLIENT || ''

@@ -10,7 +10,7 @@ const ROOT = fileURLToPath(new URL('../' + (process.argv[2] || 'dist') + '/', im
 const BASE = (process.env.BASE_PATH || '').replace(/\/$/, '');
 const SITE = (process.env.SITE_URL || 'http://localhost:4173').replace(/\/$/, '');
 const RATES = JSON.parse(readFileSync(fileURLToPath(new URL('../data/rates.json', import.meta.url)), 'utf8'));
-const SET = process.env.SITE_INDEX || 'auto';
+const SET = process.env.CF_PAGES_BRANCH === 'main' ? 'auto' : process.env.SITE_INDEX || 'auto';
 const INDEX = SET === 'true' || (SET === 'auto' && SITE === 'https://dailygoldrateindia.com' && !RATES.sample);
 const walk = (d) => readdirSync(d).flatMap((f) => (statSync(join(d, f)).isDirectory() ? walk(join(d, f)) : [join(d, f)]));
 const files = walk(ROOT).filter((f) => f.endsWith('.html') && !relative(ROOT, f).startsWith('admin'));
