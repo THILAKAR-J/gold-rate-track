@@ -144,10 +144,21 @@ export function page(ctx, o) {
   const ads = ctx.site.adsenseClient
     ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${esc(ctx.site.adsenseClient)}" crossorigin="anonymous"></script>\n`
     : '';
+  // Google Tag Manager: first thing inside <head>, as Google asks. Container ID lives in src/config.mjs.
+  const gtm = ctx.site.gtmId
+    ? `<!-- Google Tag Manager -->
+<script async src="https://www.googletagmanager.com/gtm.js?id=${esc(ctx.site.gtmId)}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+`
+    : '';
   return `<!doctype html>
 <html lang="${lang === 'ta' ? 'ta-IN' : 'en-IN'}">
 <head>
-<meta charset="utf-8">
+${gtm}<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(o.title)}</title>
 <meta name="description" content="${esc(o.description)}">

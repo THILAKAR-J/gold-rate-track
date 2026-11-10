@@ -7,6 +7,7 @@ export const site = {
   url: 'https://dailygoldrateindia.com',
   legalName: '[Company or owner legal name]',
   email: 'thilakarseto@gmail.com',
+  gtmId: 'GTM-WWCV8VDP', // Google Tag Manager container ID
   tamil: false, // Tamil pages (/ta/) and the language switch; set true to bring them back
   // Indexing: automatic on the real domain once rates are real. SITE_INDEX=false forces noindex; SITE_INDEX=true forces it on.
   // On Cloudflare's live branch (main) indexing is always automatic; SITE_INDEX only steers previews and local builds.
