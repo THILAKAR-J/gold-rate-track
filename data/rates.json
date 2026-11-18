@@ -1,22 +1,22 @@
 {
   "sample": false,
   "source": "IBJA",
-  "session": "PM",
-  "carriedFrom": null,
-  "date": "2026-11-18",
-  "updatedAt": "2026-11-18T16:30:01Z",
+  "session": "carried",
+  "carriedFrom": "2026-11-18",
+  "date": "2026-11-19",
+  "updatedAt": "2026-11-18T20:54:33Z",
   "national": {
     "24K": {
       "g": 13116,
-      "chg": -304
+      "chg": 0
     },
     "22K": {
       "g": 12015,
-      "chg": -278
+      "chg": 0
     },
     "18K": {
       "g": 9837,
-      "chg": -228
+      "chg": 0
     }
   },
   "silverPerKg": 163733,
@@ -26,20 +26,20 @@
       "label": "IBJA benchmark",
       "note": "999 purity, excl. GST",
       "g24": 13116,
-      "at": "2026-11-18T16:30:01Z"
+      "at": "2026-11-18T20:54:33Z"
     }
   },
   "drivers": [
     {
       "label": "IBJA move",
       "short": "IBJA",
-      "v": -304
+      "v": 0
     }
   ],
   "editorNote": {
-    "text": "IBJA closing rate. 24K gold is down ₹304 per gram from the previous trading day.",
+    "text": "Today's IBJA rate is published after 12:30 PM. Until then this is the last IBJA rate, from Wednesday, 18 November.",
     "by": "Daily Gold Rate India",
-    "at": "2026-11-18T16:30:01Z"
+    "at": "2026-11-18T20:54:33Z"
   },
   "watch": [
     {
@@ -251,90 +251,90 @@
       "22K": 12015,
       "18K": 9837,
       "local": false,
-      "at": "2026-11-18T16:30:01Z",
-      "chg24": -304,
-      "chg22": -278
+      "at": "2026-11-18T20:54:33Z",
+      "chg24": 0,
+      "chg22": 0
     },
     "mumbai": {
       "24K": 13116,
       "22K": 12015,
       "18K": 9837,
       "local": false,
-      "at": "2026-11-18T16:30:01Z",
-      "chg24": -304,
-      "chg22": -278
+      "at": "2026-11-18T20:54:33Z",
+      "chg24": 0,
+      "chg22": 0
     },
     "delhi": {
       "24K": 13116,
       "22K": 12015,
       "18K": 9837,
       "local": false,
-      "at": "2026-11-18T16:30:01Z",
-      "chg24": -304,
-      "chg22": -278
+      "at": "2026-11-18T20:54:33Z",
+      "chg24": 0,
+      "chg22": 0
     },
     "kolkata": {
       "24K": 13116,
       "22K": 12015,
       "18K": 9837,
       "local": false,
-      "at": "2026-11-18T16:30:01Z",
-      "chg24": -304,
-      "chg22": -278
+      "at": "2026-11-18T20:54:33Z",
+      "chg24": 0,
+      "chg22": 0
     },
     "bengaluru": {
       "24K": 13116,
       "22K": 12015,
       "18K": 9837,
       "local": false,
-      "at": "2026-11-18T16:30:01Z",
-      "chg24": -304,
-      "chg22": -278
+      "at": "2026-11-18T20:54:33Z",
+      "chg24": 0,
+      "chg22": 0
     },
     "hyderabad": {
       "24K": 13116,
       "22K": 12015,
       "18K": 9837,
       "local": false,
-      "at": "2026-11-18T16:30:01Z",
-      "chg24": -304,
-      "chg22": -278
+      "at": "2026-11-18T20:54:33Z",
+      "chg24": 0,
+      "chg22": 0
     },
     "kerala": {
       "24K": 13116,
       "22K": 12015,
       "18K": 9837,
       "local": false,
-      "at": "2026-11-18T16:30:01Z",
-      "chg24": -304,
-      "chg22": -278
+      "at": "2026-11-18T20:54:33Z",
+      "chg24": 0,
+      "chg22": 0
     },
     "pune": {
       "24K": 13116,
       "22K": 12015,
       "18K": 9837,
       "local": false,
-      "at": "2026-11-18T16:30:01Z",
-      "chg24": -304,
-      "chg22": -278
+      "at": "2026-11-18T20:54:33Z",
+      "chg24": 0,
+      "chg22": 0
     },
     "ahmedabad": {
       "24K": 13116,
       "22K": 12015,
       "18K": 9837,
       "local": false,
-      "at": "2026-11-18T16:30:01Z",
-      "chg24": -304,
-      "chg22": -278
+      "at": "2026-11-18T20:54:33Z",
+      "chg24": 0,
+      "chg22": 0
     },
     "vadodara": {
       "24K": 13116,
       "22K": 12015,
       "18K": 9837,
       "local": false,
-      "at": "2026-11-18T16:30:01Z",
-      "chg24": -304,
-      "chg22": -278
+      "at": "2026-11-18T20:54:33Z",
+      "chg24": 0,
+      "chg22": 0
     }
   }
 }
